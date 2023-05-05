@@ -2,7 +2,7 @@ name: pipeline
 on:
   push:
     branches:
-      - master
+      - "**"
 jobs:
   dev:
     runs-on: ubuntu-latest
