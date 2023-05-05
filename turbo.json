@@ -6,6 +6,8 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
+    "test": {},
+    "test:integration": {},
     "dev": {
       "cache": false,
       "persistent": true
