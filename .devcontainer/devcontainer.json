@@ -1,0 +1,21 @@
+{
+    "name": "main",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "main",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "github.copilot",
+                "eamodio.gitlens",
+                "GraphQL.vscode-graphql"
+            ]
+        }
+    },
+    "features": {
+        "docker-in-docker": "20.10"
+    },
+    "remoteUser": "node",
+    "postCreateCommand": "sudo chown node node_modules"
+}
