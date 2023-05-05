@@ -5,7 +5,8 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "test:integration": "turbo run test:integration"
+    "test:integration": "turbo run test:integration",
+    "release": "turbo lint test build && changeset publish"
   },
   "devDependencies": {
     "eslint": "^8.39.0",
