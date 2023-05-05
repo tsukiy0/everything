@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository":"https://github.com/tsukiy0/everything",
   "dependencies": {
     "eslint": "8.39.0",
     "eslint-config-next": "13.3.1",
@@ -16,8 +20,5 @@
   },
   "devDependencies": {
     "typescript": "5.0.4"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
