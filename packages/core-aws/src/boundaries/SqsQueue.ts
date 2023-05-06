@@ -1,7 +1,23 @@
+import { SendMessageCommand, SQSClient } from "@aws-sdk/client-sqs";
 import { Queue } from "@tsukiy0/core";
 
 export class SqsQueue<T> implements Queue<T> {
-  send(message: T): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
+  constructor(
+    private readonly sqs: SQSClient,
+    private readonly queueUrl: string
+  ) {}
+
+  static build = <T>(queueUrl: string): SqsQueue<T> => {
+    const client = new SQSClient({});
+    return new SqsQueue(client, queueUrl);
+  };
+
+  send = async (message: T): Promise<void> => {
+    const command = new SendMessageCommand({
+      QueueUrl: this.queueUrl,
+      MessageBody: JSON.stringify(message),
+    });
+
+    await this.sqs.send(command);
+  };
 }
