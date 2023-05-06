@@ -1,4 +1,4 @@
-import { SQSHandler } from "aws-lambda";
+import { SQSHandler, SQSRecord } from "aws-lambda";
 
 export class SqsQueueHandlerBuilder<TMessage> {
   private messageHandler?: (raw: unknown) => Promise<TMessage>;
@@ -33,14 +33,28 @@ export class SqsQueueHandlerBuilder<TMessage> {
     const handler = this.handler;
 
     const sqsHandler: SQSHandler = async (event) => {
+      const failures: SQSRecord[] = [];
+
       for (const record of event.Records) {
-        const wrapper = JSON.parse(record.body);
-        const raw = wrapper.data;
+        try {
+          const body = JSON.parse(record.body);
+          const raw = body.data;
 
-        const input = await messageHandler(raw);
+          const message = await messageHandler(raw);
 
-        await handler(input);
+          await handler(message);
+        } catch {
+          failures.push(record);
+        }
       }
+
+      return {
+        batchItemFailures: failures.map((f) => {
+          return {
+            itemIdentifier: f.messageId,
+          };
+        }),
+      };
     };
 
     return sqsHandler;

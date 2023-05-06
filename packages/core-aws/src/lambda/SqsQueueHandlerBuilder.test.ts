@@ -78,12 +78,48 @@ describe("SqsQueueHandlerBuilder", () => {
     expect(messageHandlerFn).toBeCalledWith("bar");
     expect(handlerFn).toBeCalledWith("bar");
   });
+
+  it.only("returns failures", async () => {
+    // arrange
+    let messageHandlerFn = jest
+      .fn()
+      .mockImplementation(async (raw: unknown) => {
+        return z.string().parse(raw);
+      });
+    let handlerFn = jest
+      .fn()
+      .mockImplementationOnce(() => {})
+      .mockImplementationOnce(() => {
+        throw new Error("hello");
+      });
+    const sqsQueueHandler = new SqsQueueHandlerBuilder<string>()
+      .withMessage(messageHandlerFn)
+      .withHandler(handlerFn)
+      .build();
+
+    // act
+    const got = await sqsQueueHandler(
+      buildSqsEvent(["foo", "bar"]),
+      {} as Context,
+      (() => {}) as Callback
+    );
+
+    // assert
+    expect(got).toEqual({
+      batchItemFailures: [
+        {
+          itemIdentifier: "bar-id",
+        },
+      ],
+    });
+  });
 });
 
-const buildSqsEvent = <T>(messages: T[]): SQSEvent => {
+const buildSqsEvent = (messages: string[]): SQSEvent => {
   return {
     Records: messages.map((m) => {
       return {
+        messageId: `${m}-id`,
         body: JSON.stringify({
           data: m,
         }),
