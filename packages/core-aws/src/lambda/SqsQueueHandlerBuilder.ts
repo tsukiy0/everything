@@ -1,8 +1,8 @@
 import { SQSHandler } from "aws-lambda";
 
 export class SqsQueueHandlerBuilder<TMessage> {
-  private messageHandler: (raw: unknown) => Promise<TMessage>;
-  private handler: (message: TMessage) => Promise<void>;
+  private messageHandler?: (raw: unknown) => Promise<TMessage>;
+  private handler?: (message: TMessage) => Promise<void>;
 
   withMessage = (
     messageHandler: (raw: unknown) => Promise<TMessage>
@@ -21,17 +21,28 @@ export class SqsQueueHandlerBuilder<TMessage> {
   };
 
   build = (): SQSHandler => {
-    const handler: SQSHandler = async (event) => {
+    if (!this.messageHandler) {
+      throw new Error("message is required");
+    }
+
+    if (!this.handler) {
+      throw new Error("handler is required");
+    }
+
+    const messageHandler = this.messageHandler;
+    const handler = this.handler;
+
+    const sqsHandler: SQSHandler = async (event) => {
       for (const record of event.Records) {
         const wrapper = JSON.parse(record.body);
         const raw = wrapper.data;
 
-        const input = await this.messageHandler(raw);
+        const input = await messageHandler(raw);
 
-        await this.handler(input);
+        await handler(input);
       }
     };
 
-    return handler;
+    return sqsHandler;
   };
 }
