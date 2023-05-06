@@ -14,9 +14,15 @@
         "prelint": "tsc --noEmit",
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@cdktf/provider-aws": "^14.0.2",
+        "@cdktf/provider-cloudflare": "6.0.1",
+        "cdktf": "0.16.0",
+        "constructs": "10.2.7"
+    },
     "devDependencies": {
         "@tsukiy0/eslint-config-custom": "*",
+        "cdktf-cli": "0.16.0",
         "tsconfig": "*",
         "tsup": "6.7.0",
         "typescript": "5.0.4"
