@@ -21,6 +21,7 @@
     },
     "devDependencies": {
         "@tsukiy0/eslint-config-custom": "*",
+        "@types/aws-lambda": "^8.10.115",
         "tsconfig": "*",
         "tsup": "6.7.0",
         "typescript": "5.0.4"

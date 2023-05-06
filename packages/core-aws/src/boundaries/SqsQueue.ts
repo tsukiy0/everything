@@ -15,7 +15,9 @@ export class SqsQueue<T> implements Queue<T> {
   send = async (message: T): Promise<void> => {
     const command = new SendMessageCommand({
       QueueUrl: this.queueUrl,
-      MessageBody: JSON.stringify(message),
+      MessageBody: JSON.stringify({
+        data: message,
+      }),
     });
 
     await this.sqs.send(command);
