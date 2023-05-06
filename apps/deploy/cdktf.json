@@ -1,0 +1,4 @@
+{
+    "language": "typescript",
+    "app": "yarn ts-node src/index.ts"
+}

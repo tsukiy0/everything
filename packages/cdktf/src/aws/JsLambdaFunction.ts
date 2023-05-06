@@ -19,7 +19,7 @@ export class JsLambdaFunction extends Construct {
     id: string,
     props: {
       codePath: string;
-      environment: Record<string, string>;
+      environment?: Record<string, string>;
       timeout?: number;
       memorySize?: number;
     }
