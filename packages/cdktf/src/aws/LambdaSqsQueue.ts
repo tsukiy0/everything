@@ -15,6 +15,7 @@ export class LambdaSqsQueue extends Construct {
       lambdaFunction: LambdaFunction;
       enabled: boolean;
       maxRetries: number;
+      batchSize: number;
     }
   ) {
     super(scope, id);
@@ -54,7 +55,7 @@ export class LambdaSqsQueue extends Construct {
       eventSourceArn: sqsQueue.arn,
       functionName: props.lambdaFunction.arn,
       enabled: props.enabled,
-      batchSize: 1,
+      batchSize: props.batchSize,
     });
 
     this.sqsQueue = sqsQueue;
