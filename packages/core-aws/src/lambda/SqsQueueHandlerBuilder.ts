@@ -22,7 +22,7 @@ export class SqsQueueHandlerBuilder<TMessage> {
 
   build = (): SQSHandler => {
     if (!this.messageHandler) {
-      throw new Error("message is required");
+      throw new Error("message handler is required");
     }
 
     if (!this.handler) {

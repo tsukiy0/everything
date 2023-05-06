@@ -13,6 +13,7 @@
         "prebuild": "rm -rf dist",
         "build": "tsup src/index.ts --format cjs,esm --dts",
         "prelint": "tsc --noEmit",
+        "test": "jest --config=jest.config.js",
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
@@ -21,6 +22,7 @@
     },
     "devDependencies": {
         "@tsukiy0/eslint-config-custom": "*",
+        "@tsukiy0/jest-config": "*",
         "@types/aws-lambda": "^8.10.115",
         "tsconfig": "*",
         "tsup": "6.7.0",
