@@ -10,6 +10,7 @@
     },
     "repository": "https://github.com/tsukiy0/everything",
     "scripts": {
+        "prebuild": "rm -rf dist",
         "build": "tsup src/index.ts --format cjs,esm --dts",
         "prelint": "tsc --noEmit",
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"

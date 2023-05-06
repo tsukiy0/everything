@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
     "typecheck": "tsc --noEmit",
+    "prebuild": "rm -rf dist",
     "build": "esbuild src/lambdas/loggingLambda/index.ts --bundle --platform=node --sourcemap --outdir=dist",
     "deploy": "cdktf deploy --auto-approve '*'"
   },
