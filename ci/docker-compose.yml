@@ -8,3 +8,18 @@ services:
       - ..:/app
     working_dir: /app
     command: bash ./ci/build
+  deploy:
+    build:
+      context: .
+      dockerfile: deploy.Dockerfile
+    volumes:
+      - ..:/app
+    working_dir: /app
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      TF_TOKEN_app_terraform_io: ${TERRAFORM_CLOUD_TOKEN}
+      TERRAFORM_ORGANIZATION: ${TERRAFORM_ORGANIZATION}
+      TERRAFORM_WORKSPACE: ${TERRAFORM_WORKSPACE}
+    command: bash ./ci/deploy

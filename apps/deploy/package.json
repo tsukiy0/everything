@@ -1,0 +1,28 @@
+{
+  "name": "deploy",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "prebuild": "rm -rf dist",
+    "build": "esbuild src/lambdas/loggingLambda/index.ts --bundle --platform=node --sourcemap --outdir=dist",
+    "deploy": "cdktf deploy --auto-approve '*'"
+  },
+  "dependencies": {
+    "@cdktf/provider-aws": "14.0.2",
+    "@tsukiy0/cdktf": "*",
+    "@tsukiy0/core": "*",
+    "cdktf": "0.16.0",
+    "constructs": "10.2.7"
+  },
+  "devDependencies": {
+    "@tsukiy0/eslint-config-custom": "*",
+    "@types/aws-lambda": "8.10.115",
+    "cdktf-cli": "0.16.0",
+    "esbuild": "0.17.18",
+    "ts-node": "10.9.1",
+    "tsconfig": "*",
+    "typescript": "5.0.4"
+  }
+}

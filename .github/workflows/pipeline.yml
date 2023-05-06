@@ -6,12 +6,22 @@ on:
 jobs:
   dev:
     runs-on: ubuntu-latest
-    env:
-      ENVIRONMENT: dev
     steps:
       - uses: actions/checkout@v3
       - name: build
         run: |
           docker-compose -f ci/docker-compose.yml build build
           docker-compose -f ci/docker-compose.yml run build
+          docker-compose -f ci/docker-compose.yml down
+      - name: deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+          TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
+          TERRAFORM_ORGANIZATION: tsukiy0
+          TERRAFORM_WORKSPACE: everything-dev
+        run: |
+          docker-compose -f ci/docker-compose.yml build deploy
+          docker-compose -f ci/docker-compose.yml run deploy
           docker-compose -f ci/docker-compose.yml down
