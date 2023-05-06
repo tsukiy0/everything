@@ -38,6 +38,7 @@ export class TestStack extends TerraformStack {
     );
     const lambdaQueue = new aws.LambdaSqsQueue(this, "lambda-queue", {
       lambdaFunction: queueConsumerLambda.lambdaFunction,
+      lambdaFunctionRole: queueConsumerLambda.role,
       enabled: true,
       maxRetries: 1,
       batchSize: 5,

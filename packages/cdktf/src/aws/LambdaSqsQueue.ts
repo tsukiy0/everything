@@ -13,6 +13,7 @@ export class LambdaSqsQueue extends Construct {
     id: string,
     props: {
       lambdaFunction: LambdaFunction;
+      lambdaFunctionRole: IamRole;
       enabled: boolean;
       maxRetries: number;
       batchSize: number;
@@ -34,7 +35,7 @@ export class LambdaSqsQueue extends Construct {
     });
 
     new IamRolePolicy(this, "lambda-sqs-policy", {
-      role: props.lambdaFunction.role,
+      role: props.lambdaFunctionRole.name,
       policy: JSON.stringify({
         Version: "2012-10-17",
         Statement: [
