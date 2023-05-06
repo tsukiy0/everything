@@ -3,6 +3,7 @@ import { IamRole } from "@cdktf/provider-aws/lib/iam-role";
 import { IamRolePolicyAttachment } from "@cdktf/provider-aws/lib/iam-role-policy-attachment";
 import { LambdaFunction } from "@cdktf/provider-aws/lib/lambda-function";
 import { LambdaFunctionEventInvokeConfig } from "@cdktf/provider-aws/lib/lambda-function-event-invoke-config";
+import { CloudwatchQueryDefinition } from "@cdktf/provider-aws/lib/cloudwatch-query-definition";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
 import { S3Object } from "@cdktf/provider-aws/lib/s3-object";
 import { AssetType, TerraformAsset } from "cdktf";
@@ -20,7 +21,7 @@ export class JsLambdaFunction extends Construct {
       codePath: string;
       environment: Record<string, string>;
       timeout?: number;
-      memorySize: number;
+      memorySize?: number;
     }
   ) {
     super(scope, id);
@@ -71,8 +72,8 @@ export class JsLambdaFunction extends Construct {
       handler: "index.handler",
       runtime: "nodejs18.x",
       role: role.arn,
-      timeout: props.timeout,
-      memorySize: props.memorySize,
+      timeout: props.timeout ?? 30,
+      memorySize: props.memorySize ?? 256,
       sourceCodeHash: asset.assetHash,
       environment: {
         variables: {
@@ -90,6 +91,15 @@ export class JsLambdaFunction extends Construct {
     const logGroup = new CloudwatchLogGroup(this, "log-group", {
       name: `/aws/lambda/${lambdaFunction.functionName}`,
       retentionInDays: 14,
+    });
+
+    new CloudwatchQueryDefinition(this, "error-query", {
+      name: `${lambdaFunction.functionName}-error-query`,
+      queryString: `fields @timestamp, @message
+| filter level="ERROR"
+| sort @timestamp desc
+| limit 25`,
+      logGroupNames: [logGroup.name],
     });
 
     this.lambdaFunction = lambdaFunction;

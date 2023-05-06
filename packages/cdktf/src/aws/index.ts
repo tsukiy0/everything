@@ -1,0 +1,1 @@
+export { JsLambdaFunction } from "./JsLambdaFunction"

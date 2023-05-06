@@ -389,10 +389,10 @@
     nan "^2.14.2"
     prebuild-install "^7.1.1"
 
-"@cdktf/provider-aws@^14.0.2":
-  version "14.0.4"
-  resolved "https://registry.yarnpkg.com/@cdktf/provider-aws/-/provider-aws-14.0.4.tgz#be096f1e219c8c32a1f7ce801ec8f11f62e8c832"
-  integrity sha512-/NGdzzVPvTchei/2O7AdId9WX3GequSQwlJ5wuAeMKCLlUBCqRPVU1ndsr48tkwvFdyefgK3Goh5/1xeiUOSdw==
+"@cdktf/provider-aws@14.0.2":
+  version "14.0.2"
+  resolved "https://registry.yarnpkg.com/@cdktf/provider-aws/-/provider-aws-14.0.2.tgz#2a9326a13d7cb4e3a7cdccb008f8c0418a89f3f7"
+  integrity sha512-7tpe3XkHTrjiSikfPLNtUFBB7M+35TAu6wgsnsKVqXe91RypMZ0cN8boBxnIm6//JcIkWnKgxg/cX65GEe7gyg==
 
 "@cdktf/provider-cloudflare@6.0.1":
   version "6.0.1"

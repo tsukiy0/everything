@@ -1,6 +1,6 @@
 {
     "name": "@tsukiy0/cdktf",
-    "version": "0.1.0",
+    "version": "0.0.0",
     "main": "dist/index.js",
     "module": "dist/index.mjs",
     "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
-        "@cdktf/provider-aws": "^14.0.2",
+        "@cdktf/provider-aws": "14.0.2",
         "@cdktf/provider-cloudflare": "6.0.1",
         "cdktf": "0.16.0",
         "constructs": "10.2.7"
