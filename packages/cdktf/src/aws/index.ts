@@ -1,1 +1,1 @@
-export { JsLambdaFunction } from "./JsLambdaFunction"
+export { JsLambdaFunction } from "./JsLambdaFunction";

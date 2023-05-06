@@ -1,9 +1,9 @@
 import { CloudwatchLogGroup } from "@cdktf/provider-aws/lib/cloudwatch-log-group";
+import { CloudwatchQueryDefinition } from "@cdktf/provider-aws/lib/cloudwatch-query-definition";
 import { IamRole } from "@cdktf/provider-aws/lib/iam-role";
 import { IamRolePolicyAttachment } from "@cdktf/provider-aws/lib/iam-role-policy-attachment";
 import { LambdaFunction } from "@cdktf/provider-aws/lib/lambda-function";
 import { LambdaFunctionEventInvokeConfig } from "@cdktf/provider-aws/lib/lambda-function-event-invoke-config";
-import { CloudwatchQueryDefinition } from "@cdktf/provider-aws/lib/cloudwatch-query-definition";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
 import { S3Object } from "@cdktf/provider-aws/lib/s3-object";
 import { AssetType, TerraformAsset } from "cdktf";
