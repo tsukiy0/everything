@@ -25,3 +25,12 @@ jobs:
           docker-compose -f ci/docker-compose.yml build deploy
           docker-compose -f ci/docker-compose.yml run deploy
           docker-compose -f ci/docker-compose.yml down
+      - name: integration
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+        run: |
+          docker-compose -f ci/docker-compose.yml build integration
+          docker-compose -f ci/docker-compose.yml run integration
+          docker-compose -f ci/docker-compose.yml down
