@@ -3,6 +3,6 @@
 set -euxo pipefail
 
 yarn install
-yarn lint
 yarn build
+yarn lint
 yarn test
