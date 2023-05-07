@@ -1,4 +1,4 @@
-# @tsukiy0/cdktf
+# @tsukiy0/core-aws
 
 ## 0.2.0
 
@@ -7,9 +7,7 @@
 - 3761566: - add Queue with SqsQueue implementation
   - add SqsQueueHandlerBuilder
 
-## 0.1.0
+### Patch Changes
 
-### Minor Changes
-
-- 24c6c5e: \* init cdktf
-  - add JsLambdaFunction
+- Updated dependencies [3761566]
+  - @tsukiy0/core@0.2.0
