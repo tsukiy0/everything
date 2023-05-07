@@ -1,5 +1,11 @@
 # @tsukiy0/core-aws
 
+## 0.3.0
+
+### Minor Changes
+
+- c0f487e: add LambdaHttpApi
+
 ## 0.2.0
 
 ### Minor Changes
