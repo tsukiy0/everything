@@ -55,5 +55,12 @@ export class TestStack extends TerraformStack {
       }
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
+
+    const apiLambda = new aws.JsLambdaFunction(this, "api-lambda", {
+      codePath: path.resolve(__dirname, "../dist/api"),
+    });
+    const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
+      lambdaFunction: apiLambda.lambdaFunction,
+    });
   }
 }
