@@ -62,5 +62,9 @@ export class TestStack extends TerraformStack {
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
       lambdaFunction: apiLambda.lambdaFunction,
     });
+    new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
+      name: "/test/api-lambda-http-api-endpoint",
+      value: lambdaHttpApi.api.apiEndpoint,
+    });
   }
 }
