@@ -13,7 +13,8 @@
         "prebuild": "rm -rf dist",
         "build": "tsup src/index.ts --format cjs,esm --dts",
         "prelint": "tsc --noEmit",
-        "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
+        "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
+        "test:integration": "jest --config jest.integration.config.js"
     },
     "dependencies": {
         "@cdktf/provider-aws": "14.0.2",
@@ -22,6 +23,7 @@
         "constructs": "10.2.7"
     },
     "devDependencies": {
+        "@aws-sdk/client-ssm": "^3.328.0",
         "@tsukiy0/eslint-config-custom": "*",
         "cdktf-cli": "0.16.0",
         "tsconfig": "*",
