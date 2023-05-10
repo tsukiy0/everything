@@ -1,5 +1,11 @@
 # @tsukiy0/cdktf
 
+## 0.4.0
+
+### Minor Changes
+
+- 64d9354: add custom domains to LambdaHttpApi
+
 ## 0.3.0
 
 ### Minor Changes
