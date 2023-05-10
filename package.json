@@ -6,12 +6,11 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:integration": "turbo run test:integration",
-    "release": "turbo lint test build && changeset publish"
+    "release": "turbo build lint test && changeset publish"
   },
   "devDependencies": {
-    "eslint": "^8.39.0",
-    "eslint-config-custom": "*",
-    "prettier": "^2.5.1",
+    "@tsukiy0/eslint-config-custom": "*",
+    "eslint": "8.40.0",
     "turbo": "latest"
   },
   "name": "everything",
@@ -21,6 +20,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "@changesets/cli": "^2.26.1"
+    "@changesets/cli": "2.26.1"
   }
 }

@@ -17,13 +17,13 @@
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
-        "@aws-sdk/client-sqs": "^3.321.1",
+        "@aws-sdk/client-sqs": "3.329.0",
         "@tsukiy0/core": "*"
     },
     "devDependencies": {
         "@tsukiy0/eslint-config-custom": "*",
         "@tsukiy0/jest-config": "*",
-        "@types/aws-lambda": "^8.10.115",
+        "@types/aws-lambda": "8.10.115",
         "tsconfig": "*",
         "tsup": "6.7.0",
         "typescript": "5.0.4"
