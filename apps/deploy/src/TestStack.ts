@@ -78,14 +78,15 @@ export class TestStack extends TerraformStack {
     });
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
       lambdaFunction: apiLambda.lambdaFunction,
-    }).withCustomDomain({
+    });
+    const customDomain = lambdaHttpApi.withCustomDomain({
       domainName,
       acmCertificateValidation: apiCertificate.acmCertificateValidation,
     });
     new cloudflare.CNameDnsRecord(this, "api-cname-record", {
       zoneId: cloudflareZoneId,
       domainName,
-      target: lambdaHttpApi.api.apiEndpoint.replace("https://", ""),
+      target: customDomain.domainName.domainNameConfiguration.targetDomainName,
     });
 
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {

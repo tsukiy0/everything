@@ -61,7 +61,9 @@ export class LambdaHttpApi extends Construct {
   public withCustomDomain = (props: {
     domainName: string;
     acmCertificateValidation: AcmCertificateValidation;
-  }): LambdaHttpApi => {
+  }): {
+    domainName: Apigatewayv2DomainName;
+  } => {
     const domainName = new Apigatewayv2DomainName(this, "domain-name", {
       domainName: props.domainName,
       domainNameConfiguration: {
@@ -71,14 +73,14 @@ export class LambdaHttpApi extends Construct {
       },
     });
 
-    domainName.domainNameConfiguration.targetDomainName
-
     new Apigatewayv2ApiMapping(this, "api-mapping", {
       apiId: this.api.id,
       stage: this.stage.id,
       domainName: domainName.id,
     });
 
-    return this;
+    return {
+      domainName,
+    };
   };
 }
