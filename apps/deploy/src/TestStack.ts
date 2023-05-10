@@ -1,6 +1,6 @@
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { CloudflareProvider } from "@cdktf/provider-cloudflare/lib/provider";
-import { aws, tf } from "@tsukiy0/cdktf";
+import { aws, cloudflare, tf } from "@tsukiy0/cdktf";
 import { CloudBackend, NamedCloudWorkspace, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 import path from "path";
@@ -60,15 +60,16 @@ export class TestStack extends TerraformStack {
     lambdaQueue.grantSend(queueProducerLambda.role);
 
     const domainName = "api.dev.everything.tsukiyo.io";
+    const cloudflareZoneId = new tf.SecretStringVariable(
+      this,
+      "CLOUDFLARE_ZONE_ID"
+    ).value();
     const apiCertificate = new aws.AcmCertificateForCloudflare(
       this,
       "api-acm-certificate",
       {
         domainName,
-        cloudflareZoneId: new tf.SecretStringVariable(
-          this,
-          "CLOUDFLARE_ZONE_ID"
-        ).value(),
+        cloudflareZoneId,
       }
     );
 
@@ -81,6 +82,12 @@ export class TestStack extends TerraformStack {
       domainName,
       acmCertificateValidation: apiCertificate.acmCertificateValidation,
     });
+    new cloudflare.CNameDnsRecord(this, "api-cname-record", {
+      zoneId: cloudflareZoneId,
+      domainName,
+      target: lambdaHttpApi.api.apiEndpoint,
+    });
+
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",
       value: lambdaHttpApi.api.apiEndpoint,
