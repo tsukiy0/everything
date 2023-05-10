@@ -1,5 +1,11 @@
 # @tsukiy0/core-aws
 
+## 0.4.0
+
+### Minor Changes
+
+- c7300c6: log sqs queue errors
+
 ## 0.3.0
 
 ### Minor Changes
