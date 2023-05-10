@@ -85,7 +85,7 @@ export class TestStack extends TerraformStack {
     new cloudflare.CNameDnsRecord(this, "api-cname-record", {
       zoneId: cloudflareZoneId,
       domainName,
-      target: lambdaHttpApi.api.apiEndpoint,
+      target: lambdaHttpApi.api.apiEndpoint.replace("https://", ""),
     });
 
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {

@@ -71,6 +71,8 @@ export class LambdaHttpApi extends Construct {
       },
     });
 
+    domainName.domainNameConfiguration.targetDomainName
+
     new Apigatewayv2ApiMapping(this, "api-mapping", {
       apiId: this.api.id,
       stage: this.stage.id,
