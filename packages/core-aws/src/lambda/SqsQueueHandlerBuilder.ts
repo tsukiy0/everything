@@ -1,3 +1,4 @@
+import { ConsoleLogger } from "@tsukiy0/core";
 import { SQSHandler, SQSRecord } from "aws-lambda";
 
 export class SqsQueueHandlerBuilder<TMessage> {
@@ -34,6 +35,7 @@ export class SqsQueueHandlerBuilder<TMessage> {
 
     const sqsHandler: SQSHandler = async (event) => {
       const failures: SQSRecord[] = [];
+      const logger = new ConsoleLogger();
 
       for (const record of event.Records) {
         try {
@@ -43,7 +45,8 @@ export class SqsQueueHandlerBuilder<TMessage> {
           const message = await messageHandler(raw);
 
           await handler(message);
-        } catch {
+        } catch (e) {
+          logger.error(e, { record });
           failures.push(record);
         }
       }
