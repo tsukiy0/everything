@@ -6,7 +6,7 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:integration": "turbo run test:integration",
-    "release": "turbo build lint test && changeset publish"
+    "release": "yarn build && yarn lint && yarn test && changeset publish"
   },
   "devDependencies": {
     "@tsukiy0/eslint-config-custom": "*",
