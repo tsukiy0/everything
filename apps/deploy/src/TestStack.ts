@@ -60,19 +60,26 @@ export class TestStack extends TerraformStack {
     lambdaQueue.grantSend(queueProducerLambda.role);
 
     const domainName = "api.dev.everything.tsukiyo.io";
-    new aws.AcmCertificateForCloudflare(this, "api-acm-certificate", {
-      domainName,
-      cloudflareZoneId: new tf.SecretStringVariable(
-        this,
-        "CLOUDFLARE_ZONE_ID"
-      ).value(),
-    });
+    const apiCertificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "api-acm-certificate",
+      {
+        domainName,
+        cloudflareZoneId: new tf.SecretStringVariable(
+          this,
+          "CLOUDFLARE_ZONE_ID"
+        ).value(),
+      }
+    );
 
     const apiLambda = new aws.JsLambdaFunction(this, "api-lambda", {
       codePath: path.resolve(__dirname, "../dist/api"),
     });
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
       lambdaFunction: apiLambda.lambdaFunction,
+    }).withCustomDomain({
+      domainName,
+      acmCertificateValidation: apiCertificate.acmCertificateValidation,
     });
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",
