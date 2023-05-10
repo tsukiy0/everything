@@ -1,4 +1,7 @@
+import { AcmCertificateValidation } from "@cdktf/provider-aws/lib/acm-certificate-validation";
 import { Apigatewayv2Api } from "@cdktf/provider-aws/lib/apigatewayv2-api";
+import { Apigatewayv2ApiMapping } from "@cdktf/provider-aws/lib/apigatewayv2-api-mapping";
+import { Apigatewayv2DomainName } from "@cdktf/provider-aws/lib/apigatewayv2-domain-name";
 import { Apigatewayv2Integration } from "@cdktf/provider-aws/lib/apigatewayv2-integration";
 import { Apigatewayv2Route } from "@cdktf/provider-aws/lib/apigatewayv2-route";
 import { Apigatewayv2Stage } from "@cdktf/provider-aws/lib/apigatewayv2-stage";
@@ -8,6 +11,7 @@ import { Construct } from "constructs";
 
 export class LambdaHttpApi extends Construct {
   public readonly api: Apigatewayv2Api;
+  private readonly stage: Apigatewayv2Stage;
 
   public constructor(
     scope: Construct,
@@ -50,21 +54,33 @@ export class LambdaHttpApi extends Construct {
       sourceArn: `${api.executionArn}/*/*`,
     });
 
-    // const domainName = new Apigatewayv2DomainName(this, "domain-name", {
-    //   domainName: props.domain.domainName,
-    //   domainNameConfiguration: {
-    //     certificateArn: props.domain.certificateValidation.certificateArn,
-    //     endpointType: "REGIONAL",
-    //     securityPolicy: "TLS_1_2",
-    //   },
-    // });
-
-    // new Apigatewayv2ApiMapping(this, "api-mapping", {
-    //   apiId: api.id,
-    //   stage: stage.id,
-    //   domainName: domainName.id,
-    // });
-
     this.api = api;
+    this.stage = stage;
   }
+
+  public withCustomDomain = (props: {
+    domainName: string;
+    acmCertificateValidation: AcmCertificateValidation;
+  }): {
+    domainName: Apigatewayv2DomainName;
+  } => {
+    const domainName = new Apigatewayv2DomainName(this, "domain-name", {
+      domainName: props.domainName,
+      domainNameConfiguration: {
+        certificateArn: props.acmCertificateValidation.certificateArn,
+        endpointType: "REGIONAL",
+        securityPolicy: "TLS_1_2",
+      },
+    });
+
+    new Apigatewayv2ApiMapping(this, "api-mapping", {
+      apiId: this.api.id,
+      stage: this.stage.id,
+      domainName: domainName.id,
+    });
+
+    return {
+      domainName,
+    };
+  };
 }

@@ -1,5 +1,6 @@
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
-import { aws } from "@tsukiy0/cdktf";
+import { CloudflareProvider } from "@cdktf/provider-cloudflare/lib/provider";
+import { aws, cloudflare, tf } from "@tsukiy0/cdktf";
 import { CloudBackend, NamedCloudWorkspace, TerraformStack } from "cdktf";
 import { Construct } from "constructs";
 import path from "path";
@@ -24,6 +25,8 @@ export class TestStack extends TerraformStack {
     });
 
     new AwsProvider(this, "aws", {});
+
+    new CloudflareProvider(this, "cloudflare", {});
 
     const loggingLambda = new aws.JsLambdaFunction(this, "logging-lambda", {
       codePath: path.resolve(__dirname, "../dist/logging"),
@@ -56,12 +59,36 @@ export class TestStack extends TerraformStack {
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
 
+    const domainName = "api.dev.everything.tsukiyo.io";
+    const cloudflareZoneId = new tf.SecretStringVariable(
+      this,
+      "CLOUDFLARE_ZONE_ID"
+    ).value();
+    const apiCertificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "api-acm-certificate",
+      {
+        domainName,
+        cloudflareZoneId,
+      }
+    );
+
     const apiLambda = new aws.JsLambdaFunction(this, "api-lambda", {
       codePath: path.resolve(__dirname, "../dist/api"),
     });
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
       lambdaFunction: apiLambda.lambdaFunction,
     });
+    const customDomain = lambdaHttpApi.withCustomDomain({
+      domainName,
+      acmCertificateValidation: apiCertificate.acmCertificateValidation,
+    });
+    new cloudflare.CNameDnsRecord(this, "api-cname-record", {
+      zoneId: cloudflareZoneId,
+      domainName,
+      target: customDomain.domainName.domainNameConfiguration.targetDomainName,
+    });
+
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",
       value: lambdaHttpApi.api.apiEndpoint,
