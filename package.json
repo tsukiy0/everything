@@ -10,8 +10,8 @@
   },
   "devDependencies": {
     "@tsukiy0/eslint-config-custom": "*",
-    "eslint": "8.40.0",
-    "turbo": "latest"
+    "eslint": "8.41.0",
+    "turbo": "1.9.8"
   },
   "name": "everything",
   "packageManager": "yarn@1.22.19",
