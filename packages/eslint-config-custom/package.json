@@ -8,10 +8,10 @@
   },
   "repository": "https://github.com/tsukiy0/everything",
   "dependencies": {
-    "eslint": "8.40.0",
-    "eslint-config-next": "13.4.1",
+    "eslint": "8.41.0",
+    "eslint-config-next": "13.4.3",
     "eslint-config-prettier": "8.8.0",
-    "eslint-config-turbo": "1.9.3",
+    "eslint-config-turbo": "1.9.8",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-simple-import-sort": "10.0.0",
@@ -19,7 +19,7 @@
     "prettier": "2.8.8"
   },
   "devDependencies": {
-    "next": "13.4.1",
+    "next": "13.4.3",
     "typescript": "5.0.4"
   }
 }

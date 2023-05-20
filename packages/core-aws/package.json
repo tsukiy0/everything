@@ -17,7 +17,7 @@
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
-        "@aws-sdk/client-sqs": "3.329.0",
+        "@aws-sdk/client-sqs": "3.335.0",
         "@tsukiy0/core": "*"
     },
     "devDependencies": {
