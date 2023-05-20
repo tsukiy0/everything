@@ -1,5 +1,11 @@
 # @tsukiy0/cdktf
 
+## 0.5.0
+
+### Minor Changes
+
+- e845e15: upgrade deps
+
 ## 0.4.0
 
 ### Minor Changes
