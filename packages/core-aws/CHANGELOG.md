@@ -1,5 +1,11 @@
 # @tsukiy0/core-aws
 
+## 0.6.0
+
+### Minor Changes
+
+- 2a77334: add ExpressHandlerBuilder
+
 ## 0.5.0
 
 ### Minor Changes
