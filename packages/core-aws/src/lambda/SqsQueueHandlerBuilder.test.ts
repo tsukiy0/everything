@@ -79,7 +79,7 @@ describe("SqsQueueHandlerBuilder", () => {
     expect(handlerFn).toBeCalledWith("bar");
   });
 
-  it.only("returns failures", async () => {
+  it("returns failures", async () => {
     // arrange
     let messageHandlerFn = jest
       .fn()
