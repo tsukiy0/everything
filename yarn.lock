@@ -2358,7 +2358,7 @@
     "@types/range-parser" "*"
     "@types/send" "*"
 
-"@types/express@4.17.17":
+"@types/express@4.17.17", "@types/express@^4.17.17":
   version "4.17.17"
   resolved "https://registry.yarnpkg.com/@types/express/-/express-4.17.17.tgz#01d5437f6ef9cfa8668e616e13c2f2ac9a491ae4"
   integrity sha512-Q4FmmuLGBG58btUnfS1c1r/NQdlp3DMfGDGig8WhfpA2YRUtEkxAjkZb0yvplJGYdF1fsQ81iMDcH24sSCNC/Q==
@@ -2562,6 +2562,11 @@
   version "4.10.3"
   resolved "https://registry.yarnpkg.com/@vendia/serverless-express/-/serverless-express-4.10.3.tgz#1260cac642991a597c801f149d27833e1a9cc890"
   integrity sha512-/bgmivwBYN9F7PPOBSQaA8AQidUT5INHlstodazNlKbpAe+QbOjrUpN83m4GvZIMUlXXg8H07cGcE3yjszOSlQ==
+
+"@vendia/serverless-express@^4.10.4":
+  version "4.10.4"
+  resolved "https://registry.yarnpkg.com/@vendia/serverless-express/-/serverless-express-4.10.4.tgz#041c04cf47a8053392299dee244283fdfe84766e"
+  integrity sha512-OH2cX+LqtrayCIkHAkShiLnvrgqGDvwIQEex5dHc/uJitBQjIz3q7dZtfU7cZ5vcR9Vkide5xJQDBEMbXoWLeA==
 
 "@xmldom/xmldom@^0.8.6", "@xmldom/xmldom@^0.8.7":
   version "0.8.7"
@@ -4173,7 +4178,7 @@ expect@^29.0.0, expect@^29.5.0:
     jest-message-util "^29.5.0"
     jest-util "^29.5.0"
 
-express@4.18.2:
+express@4.18.2, express@^4.18.2:
   version "4.18.2"
   resolved "https://registry.yarnpkg.com/express/-/express-4.18.2.tgz#3fabe08296e930c796c19e3c516979386ba9fd59"
   integrity sha512-5/PsL6iGPdfQ/lKM1UuielYgv3BUoJfz1aUwU9vHZ+J7gyvwdQXFEBIEIaxeGf0GIcreATNyBExtalisDbuMqQ==
