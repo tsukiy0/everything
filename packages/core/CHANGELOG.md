@@ -1,5 +1,11 @@
 # @tsukiy0/core
 
+## 0.3.0
+
+### Minor Changes
+
+- c99590d: optional context
+
 ## 0.2.0
 
 ### Minor Changes
