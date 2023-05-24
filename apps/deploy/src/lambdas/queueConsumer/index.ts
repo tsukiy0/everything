@@ -8,6 +8,6 @@ export const handler = new SqsQueueHandlerBuilder<string>()
   })
   .withHandler(async (message) => {
     const logger = new ConsoleLogger();
-    logger.info(message, {});
+    logger.info(message);
   })
   .build();

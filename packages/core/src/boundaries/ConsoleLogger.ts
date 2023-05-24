@@ -12,7 +12,7 @@ type ErrorLogEvent = LogEvent & {
 };
 
 export class ConsoleLogger implements Logger {
-  info = (message: string, context: any): void => {
+  info = (message: string, context?: any): void => {
     const event: LogEvent = {
       message,
       level: "INFO",
@@ -22,7 +22,7 @@ export class ConsoleLogger implements Logger {
     console.log(JSON.stringify(event));
   };
 
-  error = (maybeError: unknown, context: any): void => {
+  error = (maybeError: unknown, context?: any): void => {
     const error =
       maybeError instanceof Error ? maybeError : new Error(String(maybeError));
 
