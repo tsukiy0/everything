@@ -59,7 +59,7 @@ export class TestStack extends TerraformStack {
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
 
-    const domainName = "api.dev.everything.tsukiyo.io";
+    const apiDomainName = "api.dev.everything.tsukiyo.io";
     const cloudflareZoneId = new tf.SecretStringVariable(
       this,
       "CLOUDFLARE_ZONE_ID"
@@ -68,7 +68,7 @@ export class TestStack extends TerraformStack {
       this,
       "api-acm-certificate",
       {
-        domainName,
+        domainName: apiDomainName,
         cloudflareZoneId,
       }
     );
@@ -80,16 +80,24 @@ export class TestStack extends TerraformStack {
       lambdaFunction: apiLambda.lambdaFunction,
     });
     const customDomain = lambdaHttpApi.withCustomDomain({
-      domainName,
+      domainName: apiDomainName,
       acmCertificateValidation: apiCertificate.acmCertificateValidation,
     });
     new cloudflare.CNameDnsRecord(this, "api-cname-record", {
       zoneId: cloudflareZoneId,
-      domainName,
+      domainName: apiDomainName,
       target: customDomain.domainName.domainNameConfiguration.targetDomainName,
     });
 
-    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
+    const nextDomainName = "next.dev.everything.tsukiyo.io";
+    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {
+      domainName: nextDomainName,
+    });
+    new cloudflare.CNameDnsRecord(this, "next-cname-record", {
+      zoneId: cloudflareZoneId,
+      domainName: nextDomainName,
+      target: nextStaticSite.distribution.domainName,
+    });
 
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",

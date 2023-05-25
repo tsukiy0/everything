@@ -7,6 +7,7 @@ import { Construct } from "constructs";
 
 export class NextStaticSite extends Construct {
   bucket: S3Bucket;
+  distribution: CloudfrontDistribution;
 
   public constructor(
     scope: Construct,
@@ -57,44 +58,49 @@ export class NextStaticSite extends Construct {
       CACHING_OPTIMIZED: "658327ea-f89d-4fab-a63d-7e88639e58f6",
     };
 
-    const cdn = new CloudfrontDistribution(this, "cloudfront-distribution", {
-      origin: [
-        {
-          originId: "s3",
-          domainName: bucket.bucketRegionalDomainName,
-        },
-      ],
-      aliases: props.domainName ? [props.domainName] : [],
-      enabled: true,
-      defaultRootObject: "index.html",
-      defaultCacheBehavior: {
-        targetOriginId: "s3",
-        viewerProtocolPolicy: "allow-all",
-        allowedMethods: ["HEAD", "GET", "OPTIONS"],
-        cachedMethods: ["HEAD", "GET", "OPTIONS"],
-        cachePolicyId: managedCachePolicies.CACHING_DISABLED,
-      },
-      orderedCacheBehavior: [
-        {
+    const distribution = new CloudfrontDistribution(
+      this,
+      "cloudfront-distribution",
+      {
+        origin: [
+          {
+            originId: "s3",
+            domainName: bucket.bucketRegionalDomainName,
+          },
+        ],
+        aliases: props.domainName ? [props.domainName] : [],
+        enabled: true,
+        defaultRootObject: "index.html",
+        defaultCacheBehavior: {
           targetOriginId: "s3",
           viewerProtocolPolicy: "allow-all",
-          pathPattern: "/_next/static/*",
-          allowedMethods: ["GET", "HEAD", "OPTIONS"],
-          cachedMethods: ["GET", "HEAD", "OPTIONS"],
-          cachePolicyId: managedCachePolicies.CACHING_OPTIMIZED,
+          allowedMethods: ["HEAD", "GET", "OPTIONS"],
+          cachedMethods: ["HEAD", "GET", "OPTIONS"],
+          cachePolicyId: managedCachePolicies.CACHING_DISABLED,
         },
-      ],
-      viewerCertificate: {
-        cloudfrontDefaultCertificate: true,
-      },
-      restrictions: {
-        geoRestriction: {
-          restrictionType: "none",
-          locations: [],
+        orderedCacheBehavior: [
+          {
+            targetOriginId: "s3",
+            viewerProtocolPolicy: "allow-all",
+            pathPattern: "/_next/static/*",
+            allowedMethods: ["GET", "HEAD", "OPTIONS"],
+            cachedMethods: ["GET", "HEAD", "OPTIONS"],
+            cachePolicyId: managedCachePolicies.CACHING_OPTIMIZED,
+          },
+        ],
+        viewerCertificate: {
+          cloudfrontDefaultCertificate: true,
         },
-      },
-    });
+        restrictions: {
+          geoRestriction: {
+            restrictionType: "none",
+            locations: [],
+          },
+        },
+      }
+    );
 
     this.bucket = bucket;
+    this.distribution = distribution;
   }
 }
