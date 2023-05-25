@@ -2,6 +2,7 @@ import { CloudfrontDistribution } from "@cdktf/provider-aws/lib/cloudfront-distr
 import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-policy-document";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
 import { S3BucketPolicy } from "@cdktf/provider-aws/lib/s3-bucket-policy";
+import { S3BucketPublicAccessBlock } from "@cdktf/provider-aws/lib/s3-bucket-public-access-block";
 import { Construct } from "constructs";
 
 export class NextStaticSite extends Construct {
@@ -13,6 +14,11 @@ export class NextStaticSite extends Construct {
     const bucket = new S3Bucket(this, "bucket", {
       bucketPrefix: `static-site-${id}`,
       forceDestroy: true,
+    });
+
+    new S3BucketPublicAccessBlock(this, "bucket-public-access-block", {
+      bucket: bucket.id,
+      blockPublicPolicy: false,
     });
 
     const bucketAccessPolicy = new DataAwsIamPolicyDocument(
