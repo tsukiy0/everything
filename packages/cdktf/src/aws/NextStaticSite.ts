@@ -1,7 +1,5 @@
 import { CloudfrontDistribution } from "@cdktf/provider-aws/lib/cloudfront-distribution";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
-import { S3BucketAcl } from "@cdktf/provider-aws/lib/s3-bucket-acl";
-import { S3BucketWebsiteConfiguration } from "@cdktf/provider-aws/lib/s3-bucket-website-configuration";
 import { Construct } from "constructs";
 
 export class NextStaticSite extends Construct {
@@ -13,15 +11,6 @@ export class NextStaticSite extends Construct {
     const bucket = new S3Bucket(this, "bucket", {
       bucketPrefix: `static-site-${id}`,
       forceDestroy: true,
-    });
-
-    new S3BucketAcl(this, "bucket-acl", {
-      bucket: bucket.id,
-      acl: "private",
-    });
-
-    new S3BucketWebsiteConfiguration(this, "bucket-website-configuration", {
-      bucket: bucket.id,
     });
 
     new CloudfrontDistribution(this, "cloudfront-distribution", {
@@ -36,7 +25,13 @@ export class NextStaticSite extends Construct {
         targetOriginId: "s3",
         viewerProtocolPolicy: "allow-all",
         allowedMethods: ["HEAD", "GET", "OPTIONS"],
-        cachedMethods: [],
+        cachedMethods: ["HEAD", "GET", "OPTIONS"],
+        forwardedValues: {
+          queryString: true,
+          cookies: {
+            forward: "none",
+          },
+        },
         minTtl: 0,
         defaultTtl: 0,
         maxTtl: 0,
