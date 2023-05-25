@@ -1,8 +1,5 @@
 import { CloudfrontDistribution } from "@cdktf/provider-aws/lib/cloudfront-distribution";
-import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-policy-document";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
-import { S3BucketPolicy } from "@cdktf/provider-aws/lib/s3-bucket-policy";
-import { S3BucketPublicAccessBlock } from "@cdktf/provider-aws/lib/s3-bucket-public-access-block";
 import { Construct } from "constructs";
 
 export class NextStaticSite extends Construct {
@@ -16,34 +13,34 @@ export class NextStaticSite extends Construct {
       forceDestroy: true,
     });
 
-    new S3BucketPublicAccessBlock(this, "bucket-public-access-block", {
-      bucket: bucket.id,
-      blockPublicPolicy: false,
-    });
+    // new S3BucketPublicAccessBlock(this, "bucket-public-access-block", {
+    //   bucket: bucket.id,
+    //   blockPublicPolicy: false,
+    // });
 
-    const bucketAccessPolicy = new DataAwsIamPolicyDocument(
-      this,
-      "bucket-policy-document",
-      {
-        statement: [
-          {
-            principals: [
-              {
-                type: "*",
-                identifiers: ["*"],
-              },
-            ],
-            actions: ["s3:GetObject"],
-            resources: [`${bucket.arn}/*`],
-          },
-        ],
-      }
-    );
+    // const bucketAccessPolicy = new DataAwsIamPolicyDocument(
+    //   this,
+    //   "bucket-policy-document",
+    //   {
+    //     statement: [
+    //       {
+    //         principals: [
+    //           {
+    //             type: "*",
+    //             identifiers: ["*"],
+    //           },
+    //         ],
+    //         actions: ["s3:GetObject"],
+    //         resources: [`${bucket.arn}/*`],
+    //       },
+    //     ],
+    //   }
+    // );
 
-    new S3BucketPolicy(this, "bucket-policy", {
-      bucket: bucket.id,
-      policy: bucketAccessPolicy.json,
-    });
+    // new S3BucketPolicy(this, "bucket-policy", {
+    //   bucket: bucket.id,
+    //   policy: bucketAccessPolicy.json,
+    // });
 
     new CloudfrontDistribution(this, "cloudfront-distribution", {
       origin: [
