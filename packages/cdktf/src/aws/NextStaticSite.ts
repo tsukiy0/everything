@@ -107,6 +107,8 @@ export class NextStaticSite extends Construct {
     this.distribution.putViewerCertificate({
       cloudfrontDefaultCertificate: false,
       acmCertificateArn: props.acmCertificateValidation.certificateArn,
+      sslSupportMethod: "sni-only",
+      minimumProtocolVersion: "TLSv1",
     });
   };
 }

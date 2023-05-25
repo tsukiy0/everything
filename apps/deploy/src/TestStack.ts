@@ -24,7 +24,11 @@ export class TestStack extends TerraformStack {
       workspaces: new NamedCloudWorkspace(props.terraform.workspace),
     });
 
-    new AwsProvider(this, "aws", {});
+    const defaultProvider = new AwsProvider(this, "aws-default", {});
+    const usEast1AwsProvider = new AwsProvider(this, "aws-us-east-1", {
+      alias: "us-east-1",
+      region: "us-east-1",
+    });
 
     new CloudflareProvider(this, "cloudflare", {});
 
@@ -70,6 +74,7 @@ export class TestStack extends TerraformStack {
       {
         domainName: apiDomainName,
         cloudflareZoneId,
+        awsProvider: defaultProvider,
       }
     );
 
@@ -96,7 +101,7 @@ export class TestStack extends TerraformStack {
       {
         domainName: nextDomainName,
         cloudflareZoneId,
-        awsRegion: "us-east-1",
+        awsProvider: usEast1AwsProvider,
       }
     );
     const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});

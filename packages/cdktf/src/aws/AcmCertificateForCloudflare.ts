@@ -13,19 +13,15 @@ export class AcmCertificateForCloudflare extends Construct {
     props: {
       domainName: string;
       cloudflareZoneId: string;
-      awsRegion?: string | "us-east-1";
+      awsProvider: AwsProvider;
     }
   ) {
     super(scope, id);
 
-    const awsProvider = new AwsProvider(this, "aws", {
-      region: props.awsRegion,
-    });
-
     const certificate = new AcmCertificate(this, "acm-certificate", {
       domainName: props.domainName,
       validationMethod: "DNS",
-      provider: awsProvider,
+      provider: props.awsProvider,
     });
 
     const record = new Record(this, "record", {
@@ -53,7 +49,7 @@ export class AcmCertificateForCloudflare extends Construct {
       "acm-certificate-validation",
       {
         certificateArn: certificate.arn,
-        provider: awsProvider,
+        provider: props.awsProvider,
       }
     );
 
