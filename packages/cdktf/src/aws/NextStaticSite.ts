@@ -45,6 +45,12 @@ export class NextStaticSite extends Construct {
       policy: bucketAccessPolicy.json,
     });
 
+    // https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
+    const managedCachePolicies = {
+      CACHING_DISABLED: "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+      CACHING_OPTIMIZED: "658327ea-f89d-4fab-a63d-7e88639e58f6",
+    };
+
     new CloudfrontDistribution(this, "cloudfront-distribution", {
       origin: [
         {
@@ -59,33 +65,16 @@ export class NextStaticSite extends Construct {
         viewerProtocolPolicy: "allow-all",
         allowedMethods: ["HEAD", "GET", "OPTIONS"],
         cachedMethods: ["HEAD", "GET", "OPTIONS"],
-        forwardedValues: {
-          queryString: true,
-          cookies: {
-            forward: "none",
-          },
-        },
-        minTtl: 0,
-        defaultTtl: 0,
-        maxTtl: 0,
+        cachePolicyId: managedCachePolicies.CACHING_DISABLED,
       },
       orderedCacheBehavior: [
         {
           targetOriginId: "s3",
+          viewerProtocolPolicy: "allow-all",
           pathPattern: "/_next/static/*",
           allowedMethods: ["GET", "HEAD", "OPTIONS"],
           cachedMethods: ["GET", "HEAD", "OPTIONS"],
-          viewerProtocolPolicy: "allow-all",
-          forwardedValues: {
-            queryString: true,
-            cookies: {
-              forward: "none",
-            },
-          },
-          minTtl: 0,
-          defaultTtl: 86400,
-          maxTtl: 31536000,
-          compress: true,
+          cachePolicyId: managedCachePolicies.CACHING_OPTIMIZED,
         },
       ],
       viewerCertificate: {
