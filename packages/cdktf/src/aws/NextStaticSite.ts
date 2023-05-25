@@ -1,3 +1,4 @@
+import { AcmCertificateValidation } from "@cdktf/provider-aws/lib/acm-certificate-validation";
 import { CloudfrontDistribution } from "@cdktf/provider-aws/lib/cloudfront-distribution";
 import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-policy-document";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
@@ -9,13 +10,7 @@ export class NextStaticSite extends Construct {
   bucket: S3Bucket;
   distribution: CloudfrontDistribution;
 
-  public constructor(
-    scope: Construct,
-    id: string,
-    props: {
-      domainName?: string;
-    }
-  ) {
+  public constructor(scope: Construct, id: string, props: {}) {
     super(scope, id);
 
     const bucket = new S3Bucket(this, "bucket", {
@@ -68,7 +63,7 @@ export class NextStaticSite extends Construct {
             domainName: bucket.bucketRegionalDomainName,
           },
         ],
-        aliases: props.domainName ? [props.domainName] : [],
+        // aliases: props.domainName ? [props.domainName] : [],
         enabled: true,
         defaultRootObject: "index.html",
         defaultCacheBehavior: {
@@ -103,4 +98,15 @@ export class NextStaticSite extends Construct {
     this.bucket = bucket;
     this.distribution = distribution;
   }
+
+  withCustomDomain = (props: {
+    domainName: string;
+    acmCertificateValidation: AcmCertificateValidation;
+  }) => {
+    this.distribution.aliases = [props.domainName];
+    this.distribution.putViewerCertificate({
+      cloudfrontDefaultCertificate: false,
+      acmCertificateArn: props.acmCertificateValidation.certificateArn,
+    });
+  };
 }

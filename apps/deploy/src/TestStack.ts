@@ -90,8 +90,19 @@ export class TestStack extends TerraformStack {
     });
 
     const nextDomainName = "next.dev.everything.tsukiyo.io";
-    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {
+    const nextCertificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "next-acm-certificate",
+      {
+        domainName: nextDomainName,
+        cloudflareZoneId,
+        awsRegion: "us-east-1",
+      }
+    );
+    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
+    nextStaticSite.withCustomDomain({
       domainName: nextDomainName,
+      acmCertificateValidation: nextCertificate.acmCertificateValidation,
     });
     new cloudflare.CNameDnsRecord(this, "next-cname-record", {
       zoneId: cloudflareZoneId,
