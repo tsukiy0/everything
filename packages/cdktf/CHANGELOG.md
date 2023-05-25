@@ -1,5 +1,11 @@
 # @tsukiy0/cdktf
 
+## 0.6.0
+
+### Minor Changes
+
+- 8427fa2: add NextStaticSite
+
 ## 0.5.0
 
 ### Minor Changes
