@@ -69,19 +69,19 @@ export class NextStaticSite extends Construct {
         defaultTtl: 0,
         maxTtl: 0,
       },
-      // orderedCacheBehavior: [
-      //   {
-      //     targetOriginId: "s3",
-      //     pathPattern: "/_next/static/*",
-      //     allowedMethods: ["GET", "HEAD", "OPTIONS"],
-      //     cachedMethods: ["GET", "HEAD", "OPTIONS"],
-      //     viewerProtocolPolicy: "allow-all",
-      //     minTtl: 0,
-      //     defaultTtl: 86400,
-      //     maxTtl: 31536000,
-      //     compress: true,
-      //   },
-      // ],
+      orderedCacheBehavior: [
+        {
+          targetOriginId: "s3",
+          pathPattern: "/_next/static/*",
+          allowedMethods: ["GET", "HEAD", "OPTIONS"],
+          cachedMethods: ["GET", "HEAD", "OPTIONS"],
+          viewerProtocolPolicy: "allow-all",
+          minTtl: 0,
+          defaultTtl: 86400,
+          maxTtl: 31536000,
+          compress: true,
+        },
+      ],
       viewerCertificate: {
         cloudfrontDefaultCertificate: true,
       },
