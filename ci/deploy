@@ -5,3 +5,6 @@ set -euo pipefail
 pushd apps/deploy
 yarn deploy
 popd
+
+NEXT_STATIC_SITE_BUCKET=$(aws ssm get-parameter --name /test/next-static-site-bucket --with-decryption --query Parameter.Value --output text)
+aws s3 sync apps/web/out s3://${NEXT_STATIC_SITE_BUCKET}

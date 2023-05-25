@@ -24,7 +24,11 @@ export class TestStack extends TerraformStack {
       workspaces: new NamedCloudWorkspace(props.terraform.workspace),
     });
 
-    new AwsProvider(this, "aws", {});
+    const defaultProvider = new AwsProvider(this, "aws-default", {});
+    const usEast1AwsProvider = new AwsProvider(this, "aws-us-east-1", {
+      alias: "us-east-1",
+      region: "us-east-1",
+    });
 
     new CloudflareProvider(this, "cloudflare", {});
 
@@ -59,7 +63,7 @@ export class TestStack extends TerraformStack {
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
 
-    const domainName = "api.dev.everything.tsukiyo.io";
+    const apiDomainName = "api.dev.everything.tsukiyo.io";
     const cloudflareZoneId = new tf.SecretStringVariable(
       this,
       "CLOUDFLARE_ZONE_ID"
@@ -68,8 +72,9 @@ export class TestStack extends TerraformStack {
       this,
       "api-acm-certificate",
       {
-        domainName,
+        domainName: apiDomainName,
         cloudflareZoneId,
+        awsProvider: defaultProvider,
       }
     );
 
@@ -80,18 +85,44 @@ export class TestStack extends TerraformStack {
       lambdaFunction: apiLambda.lambdaFunction,
     });
     const customDomain = lambdaHttpApi.withCustomDomain({
-      domainName,
+      domainName: apiDomainName,
       acmCertificateValidation: apiCertificate.acmCertificateValidation,
     });
     new cloudflare.CNameDnsRecord(this, "api-cname-record", {
       zoneId: cloudflareZoneId,
-      domainName,
+      domainName: apiDomainName,
       target: customDomain.domainName.domainNameConfiguration.targetDomainName,
+    });
+
+    const nextDomainName = "next.dev.everything.tsukiyo.io";
+    const nextCertificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "next-acm-certificate",
+      {
+        domainName: nextDomainName,
+        cloudflareZoneId,
+        awsProvider: usEast1AwsProvider,
+      }
+    );
+    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
+    nextStaticSite.withCustomDomain({
+      domainName: nextDomainName,
+      acmCertificateValidation: nextCertificate.acmCertificateValidation,
+    });
+    new cloudflare.CNameDnsRecord(this, "next-cname-record", {
+      zoneId: cloudflareZoneId,
+      domainName: nextDomainName,
+      target: nextStaticSite.distribution.domainName,
     });
 
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",
       value: lambdaHttpApi.api.apiEndpoint,
+    });
+
+    new aws.SecretStringParameter(this, "next-static-site-bucket", {
+      name: "/test/next-static-site-bucket",
+      value: nextStaticSite.bucket.bucket,
     });
   }
 }
