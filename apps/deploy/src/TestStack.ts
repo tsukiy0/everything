@@ -89,9 +89,16 @@ export class TestStack extends TerraformStack {
       target: customDomain.domainName.domainNameConfiguration.targetDomainName,
     });
 
+    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
+
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",
       value: lambdaHttpApi.api.apiEndpoint,
+    });
+
+    new aws.SecretStringParameter(this, "next-static-site-bucket", {
+      name: "/test/next-static-site-bucket",
+      value: nextStaticSite.bucket.bucket,
     });
   }
 }
