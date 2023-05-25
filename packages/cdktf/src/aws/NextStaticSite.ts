@@ -53,6 +53,7 @@ export class NextStaticSite extends Construct {
         },
       ],
       enabled: true,
+      defaultRootObject: "index.html",
       defaultCacheBehavior: {
         targetOriginId: "s3",
         viewerProtocolPolicy: "allow-all",
