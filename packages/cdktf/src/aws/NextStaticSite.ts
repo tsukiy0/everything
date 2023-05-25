@@ -76,6 +76,12 @@ export class NextStaticSite extends Construct {
           allowedMethods: ["GET", "HEAD", "OPTIONS"],
           cachedMethods: ["GET", "HEAD", "OPTIONS"],
           viewerProtocolPolicy: "allow-all",
+          forwardedValues: {
+            queryString: true,
+            cookies: {
+              forward: "none",
+            },
+          },
           minTtl: 0,
           defaultTtl: 86400,
           maxTtl: 31536000,
