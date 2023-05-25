@@ -2,20 +2,12 @@ import { CloudfrontDistribution } from "@cdktf/provider-aws/lib/cloudfront-distr
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
 import { S3BucketAcl } from "@cdktf/provider-aws/lib/s3-bucket-acl";
 import { S3BucketWebsiteConfiguration } from "@cdktf/provider-aws/lib/s3-bucket-website-configuration";
-import { SsmParameter } from "@cdktf/provider-aws/lib/ssm-parameter";
 import { Construct } from "constructs";
 
 export class NextStaticSite extends Construct {
-  private ssmParameter: SsmParameter;
+  bucket: S3Bucket;
 
-  public constructor(
-    scope: Construct,
-    id: string,
-    props: {
-      name: string;
-      value: string;
-    }
-  ) {
+  public constructor(scope: Construct, id: string, props: {}) {
     super(scope, id);
 
     const bucket = new S3Bucket(this, "bucket", {
@@ -30,8 +22,6 @@ export class NextStaticSite extends Construct {
 
     new S3BucketWebsiteConfiguration(this, "bucket-website-configuration", {
       bucket: bucket.id,
-      //   indexDocument: { suffix: "index.html" },
-      //   errorDocument: { key: "index.html" },
     });
 
     new CloudfrontDistribution(this, "cloudfront-distribution", {
@@ -51,19 +41,19 @@ export class NextStaticSite extends Construct {
         defaultTtl: 0,
         maxTtl: 0,
       },
-      orderedCacheBehavior: [
-        {
-          targetOriginId: "s3",
-          pathPattern: "/_next/static/*",
-          allowedMethods: ["GET", "HEAD", "OPTIONS"],
-          cachedMethods: ["GET", "HEAD", "OPTIONS"],
-          viewerProtocolPolicy: "allow-all",
-          minTtl: 0,
-          defaultTtl: 86400,
-          maxTtl: 31536000,
-          compress: true,
-        },
-      ],
+      // orderedCacheBehavior: [
+      //   {
+      //     targetOriginId: "s3",
+      //     pathPattern: "/_next/static/*",
+      //     allowedMethods: ["GET", "HEAD", "OPTIONS"],
+      //     cachedMethods: ["GET", "HEAD", "OPTIONS"],
+      //     viewerProtocolPolicy: "allow-all",
+      //     minTtl: 0,
+      //     defaultTtl: 86400,
+      //     maxTtl: 31536000,
+      //     compress: true,
+      //   },
+      // ],
       viewerCertificate: {
         cloudfrontDefaultCertificate: true,
       },
@@ -74,5 +64,7 @@ export class NextStaticSite extends Construct {
         },
       },
     });
+
+    this.bucket = bucket;
   }
 }
