@@ -8,7 +8,13 @@ import { Construct } from "constructs";
 export class NextStaticSite extends Construct {
   bucket: S3Bucket;
 
-  public constructor(scope: Construct, id: string, props: {}) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: {
+      domainName?: string;
+    }
+  ) {
     super(scope, id);
 
     const bucket = new S3Bucket(this, "bucket", {
@@ -51,13 +57,14 @@ export class NextStaticSite extends Construct {
       CACHING_OPTIMIZED: "658327ea-f89d-4fab-a63d-7e88639e58f6",
     };
 
-    new CloudfrontDistribution(this, "cloudfront-distribution", {
+    const cdn = new CloudfrontDistribution(this, "cloudfront-distribution", {
       origin: [
         {
           originId: "s3",
           domainName: bucket.bucketRegionalDomainName,
         },
       ],
+      aliases: props.domainName ? [props.domainName] : [],
       enabled: true,
       defaultRootObject: "index.html",
       defaultCacheBehavior: {
