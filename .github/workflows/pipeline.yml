@@ -6,6 +6,7 @@ on:
 jobs:
   dev:
     runs-on: ubuntu-latest
+    concurrency: dev
     steps:
       - uses: actions/checkout@v3
       - name: build
