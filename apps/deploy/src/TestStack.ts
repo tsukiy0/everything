@@ -75,7 +75,7 @@ export class TestStack extends TerraformStack {
 
     this.buildNextStaticSite({
       cloudflareZoneId,
-      usEast1AwsProvider,
+      awsProvider: usEast1AwsProvider,
     });
   }
 
@@ -118,7 +118,7 @@ export class TestStack extends TerraformStack {
 
   buildNextStaticSite = (props: {
     cloudflareZoneId: string;
-    usEast1AwsProvider: AwsProvider;
+    awsProvider: AwsProvider;
   }) => {
     const domainName = "next.dev.everything.tsukiyo.io";
     const certificate = new aws.AcmCertificateForCloudflare(
@@ -127,7 +127,7 @@ export class TestStack extends TerraformStack {
       {
         domainName: domainName,
         cloudflareZoneId: props.cloudflareZoneId,
-        awsProvider: props.usEast1AwsProvider,
+        awsProvider: props.awsProvider,
       }
     );
     const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
