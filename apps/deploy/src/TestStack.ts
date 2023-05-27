@@ -156,7 +156,7 @@ export class TestStack extends TerraformStack {
     cloudflareZoneId: string;
     awsProvider: AwsProvider;
   }) => {
-    const domainName = "auth.dev.everything.tsukiyo.io";
+    const domainName = "auth.next.dev.everything.tsukiyo.io";
     const certificate = new aws.AcmCertificateForCloudflare(
       this,
       "auth-acm-certificate",
