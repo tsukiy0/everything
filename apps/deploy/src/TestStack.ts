@@ -174,15 +174,15 @@ export class TestStack extends TerraformStack {
       ],
     });
 
-    // const userPoolDomain = oauthPool.withCustomDomain({
-    //   domainName,
-    //   acmCertificateValidation: certificate.acmCertificateValidation,
-    // });
+    const userPoolDomain = oauthPool.withCustomDomain({
+      domainName,
+      acmCertificateValidation: certificate.acmCertificateValidation,
+    });
 
-    // new cloudflare.CNameDnsRecord(this, "auth-cname-record", {
-    //   zoneId: props.cloudflareZoneId,
-    //   domainName: domainName,
-    //   target: userPoolDomain.cloudfrontDistribution,
-    // });
+    new cloudflare.CNameDnsRecord(this, "auth-cname-record", {
+      zoneId: props.cloudflareZoneId,
+      domainName: domainName,
+      target: userPoolDomain.cloudfrontDistribution,
+    });
   };
 }
