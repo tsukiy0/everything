@@ -1,3 +1,4 @@
+/* eslint-disable turbo/no-undeclared-env-vars */
 "use client";
 
 import { Amplify, Auth, Hub } from "aws-amplify";
@@ -17,13 +18,13 @@ const AuthContext = createContext<{
 
 Amplify.configure({
   Auth: {
-    region: "us-west-2",
-    userPoolId: "us-west-2_IPJRhFbBR",
-    userPoolWebClientId: "5n8k1piafgvgak0n0fuphpdgh1",
+    region: process.env.NEXT_PUBLIC_USER_POOL_REGION,
+    userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID,
+    userPoolWebClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
     mandatorySignIn: true,
     oauth: {
       domain: "auth.next.dev.everything.tsukiyo.io",
-      scope: ["openid", "email", "profile"],
+      scope: ["openid"],
       redirectSignIn: "http://localhost:3000",
       redirectSignOut: "http://localhost:3000",
       responseType: "code",
@@ -35,6 +36,18 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
   const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const session = await Auth.currentSession();
+        const token = session.getAccessToken();
+        setAuthenticated(true);
+      } catch {
+        setAuthenticated(false);
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const listener = (data) => {
