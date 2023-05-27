@@ -4,7 +4,7 @@ import { CognitoUserPoolClient } from "@cdktf/provider-aws/lib/cognito-user-pool
 import { CognitoUserPoolDomain } from "@cdktf/provider-aws/lib/cognito-user-pool-domain";
 import { Construct } from "constructs";
 
-export class CognitoUserPool extends Construct {
+export class OAuthCognitoUserPool extends Construct {
   userPool: AwsCognitoUserPool;
   userPoolClient: CognitoUserPoolClient;
 
@@ -26,7 +26,7 @@ export class CognitoUserPool extends Construct {
       },
     });
 
-    new CognitoUserPoolClient(this, "user-pool-client", {
+    const userPoolClient = new CognitoUserPoolClient(this, "user-pool-client", {
       name: `${id}-user-pool-client`,
       userPoolId: userPool.id,
       allowedOauthFlows: ["code"],
@@ -34,7 +34,7 @@ export class CognitoUserPool extends Construct {
     });
 
     this.userPool = userPool;
-    this.userPoolClient = this.userPoolClient;
+    this.userPoolClient = userPoolClient;
   }
 
   withCustomDomain = (props: {
