@@ -12,7 +12,8 @@ export class OAuthCognitoUserPool extends Construct {
     scope: Construct,
     id: string,
     props: {
-      callbackUrls: string[];
+      signInCallbackUrls: string[];
+      signOutCallbackUrls: string[];
     }
   ) {
     super(scope, id);
@@ -31,7 +32,8 @@ export class OAuthCognitoUserPool extends Construct {
       userPoolId: userPool.id,
       allowedOauthFlows: ["code"],
       allowedOauthFlowsUserPoolClient: true,
-      callbackUrls: props.callbackUrls,
+      callbackUrls: props.signInCallbackUrls,
+      logoutUrls: props.signOutCallbackUrls,
       allowedOauthScopes: ["email", "openid", "profile"],
       supportedIdentityProviders: ["COGNITO"],
     });
