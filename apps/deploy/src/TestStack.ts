@@ -77,6 +77,11 @@ export class TestStack extends TerraformStack {
       cloudflareZoneId,
       awsProvider: usEast1AwsProvider,
     });
+
+    this.buildOAuth({
+      cloudflareZoneId,
+      awsProvider: usEast1AwsProvider,
+    });
   }
 
   buildLambdaHttpApi = (props: {
@@ -144,6 +149,31 @@ export class TestStack extends TerraformStack {
     new aws.SecretStringParameter(this, "next-static-site-bucket", {
       name: "/test/next-static-site-bucket",
       value: nextStaticSite.bucket.bucket,
+    });
+  };
+
+  buildOAuth = (props: {
+    cloudflareZoneId: string;
+    awsProvider: AwsProvider;
+  }) => {
+    const domainName = "auth.dev.everything.tsukiyo.io";
+    const certificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "auth-acm-certificate",
+      {
+        domainName: domainName,
+        cloudflareZoneId: props.cloudflareZoneId,
+        awsProvider: props.awsProvider,
+      }
+    );
+
+    const oauthPool = new aws.OAuthCognitoUserPool(this, "oauth-pool", {
+      callbackUrls: ["https://next.dev.everything.tsukiyo.io"],
+    });
+
+    oauthPool.withCustomDomain({
+      domainName,
+      acmCertificateValidation: certificate.acmCertificateValidation,
     });
   };
 }
