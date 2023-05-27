@@ -19,7 +19,7 @@ export class OAuthCognitoUserPool extends Construct {
 
     const userPool = new AwsCognitoUserPool(this, "user-pool", {
       name: `${id}-user-pool`,
-      aliasAttributes: ["email"],
+      usernameAttributes: ["email"],
       autoVerifiedAttributes: ["email"],
       adminCreateUserConfig: {
         allowAdminCreateUserOnly: false,
