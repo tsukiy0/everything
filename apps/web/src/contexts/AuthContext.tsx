@@ -5,16 +5,27 @@ import { Amplify, Auth, Hub } from "aws-amplify";
 import React, {
   createContext,
   PropsWithChildren,
+  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 
-const AuthContext = createContext<{
-  authenticated: boolean;
-}>({
-  authenticated: false,
-});
+type AuthContextValue =
+  | {
+      status: "NOT_SIGNED_IN";
+      signIn: () => void;
+    }
+  | {
+      status: "SIGNING_IN";
+    }
+  | {
+      status: "SIGNED_IN";
+      signOut: () => void;
+      token: string;
+    };
+
+const AuthContext = createContext<AuthContextValue>({} as any);
 
 Amplify.configure({
   Auth: {
@@ -23,10 +34,10 @@ Amplify.configure({
     userPoolWebClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID,
     mandatorySignIn: true,
     oauth: {
-      domain: "auth.next.dev.everything.tsukiyo.io",
+      domain: process.env.NEXT_PUBLIC_USER_POOL_DOMAIN,
       scope: ["openid"],
-      redirectSignIn: "http://localhost:3000",
-      redirectSignOut: "http://localhost:3000",
+      redirectSignIn: process.env.NEXT_PUBLIC_USER_POOL_CALLBACK_URL,
+      redirectSignOut: process.env.NEXT_PUBLIC_USER_POOL_CALLBACK_URL,
       responseType: "code",
     },
   },
@@ -35,31 +46,38 @@ Amplify.configure({
 export const AuthContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [status, setStatus] = useState<
+    "NOT_SIGNED_IN" | "SIGNING_IN" | "SIGNED_IN"
+  >("NOT_SIGNED_IN");
+  const [token, setToken] = useState<string>(undefined);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const session = await Auth.currentSession();
-        const token = session.getAccessToken();
-        setAuthenticated(true);
-      } catch {
-        setAuthenticated(false);
-      }
-    })();
+  const getToken = useCallback(async () => {
+    try {
+      const session = await Auth.currentSession();
+      const token = session.getAccessToken();
+      return token.getJwtToken();
+    } catch {
+      return undefined;
+    }
   }, []);
 
   useEffect(() => {
-    const listener = (data) => {
+    (async () => {
+      const token = await getToken();
+      setStatus("SIGNED_IN");
+      setToken(token);
+    })();
+  }, [getToken]);
+
+  useEffect(() => {
+    const listener = async (data) => {
       switch (data.payload.event) {
         case "signIn":
           console.info("user signed in");
           console.log(data.payload);
-          setAuthenticated(true);
-          break;
-        case "cognitoHostedUI":
-          console.info("Cognito Hosted UI sign in successful");
-          console.log(data.payload);
+          const token = await getToken();
+          setStatus("SIGNED_IN");
+          setToken(token);
           break;
         default:
           console.log(data.payload);
@@ -69,26 +87,43 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
     const unlisten = Hub.listen("auth", listener);
 
     return unlisten;
-  }, [setAuthenticated]);
+  }, [getToken]);
 
-  if (!authenticated) {
-    return (
-      <>
-        <div>login</div>
-        <button onClick={() => Auth.federatedSignIn()}>login</button>
-      </>
-    );
+  switch (status) {
+    case "NOT_SIGNED_IN":
+      return (
+        <AuthContext.Provider
+          value={{
+            status,
+            signIn: () => Auth.federatedSignIn(),
+          }}
+        >
+          {children}
+        </AuthContext.Provider>
+      );
+    case "SIGNING_IN":
+      return (
+        <AuthContext.Provider
+          value={{
+            status,
+          }}
+        >
+          {children}
+        </AuthContext.Provider>
+      );
+    case "SIGNED_IN":
+      return (
+        <AuthContext.Provider
+          value={{
+            status,
+            token,
+            signOut: () => Auth.signOut(),
+          }}
+        >
+          {children}
+        </AuthContext.Provider>
+      );
   }
-
-  return (
-    <AuthContext.Provider
-      value={{
-        authenticated,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
 };
 
 export const useAuthContext = () => useContext(AuthContext);
