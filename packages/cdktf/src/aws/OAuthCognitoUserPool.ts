@@ -31,6 +31,7 @@ export class OAuthCognitoUserPool extends Construct {
       userPoolId: userPool.id,
       allowedOauthFlows: ["code"],
       callbackUrls: props.callbackUrls,
+      allowedOauthScopes: ["email", "openid", "profile"],
     });
 
     this.userPool = userPool;
