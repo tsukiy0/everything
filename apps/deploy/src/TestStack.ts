@@ -24,13 +24,18 @@ export class TestStack extends TerraformStack {
       workspaces: new NamedCloudWorkspace(props.terraform.workspace),
     });
 
-    const defaultProvider = new AwsProvider(this, "aws-default", {});
+    const defaultAwsProvider = new AwsProvider(this, "aws-default", {});
     const usEast1AwsProvider = new AwsProvider(this, "aws-us-east-1", {
       alias: "us-east-1",
       region: "us-east-1",
     });
 
     new CloudflareProvider(this, "cloudflare", {});
+
+    const cloudflareZoneId = new tf.SecretStringVariable(
+      this,
+      "CLOUDFLARE_ZONE_ID"
+    ).value();
 
     const loggingLambda = new aws.JsLambdaFunction(this, "logging-lambda", {
       codePath: path.resolve(__dirname, "../dist/logging"),
@@ -63,66 +68,82 @@ export class TestStack extends TerraformStack {
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
 
-    const apiDomainName = "api.dev.everything.tsukiyo.io";
-    const cloudflareZoneId = new tf.SecretStringVariable(
-      this,
-      "CLOUDFLARE_ZONE_ID"
-    ).value();
-    const apiCertificate = new aws.AcmCertificateForCloudflare(
+    this.buildLambdaHttpApi({
+      cloudflareZoneId,
+      awsProvider: defaultAwsProvider,
+    });
+
+    this.buildNextStaticSite({
+      cloudflareZoneId,
+      awsProvider: usEast1AwsProvider,
+    });
+  }
+
+  buildLambdaHttpApi = (props: {
+    cloudflareZoneId: string;
+    awsProvider: AwsProvider;
+  }) => {
+    const domainName = "api.dev.everything.tsukiyo.io";
+    const certificate = new aws.AcmCertificateForCloudflare(
       this,
       "api-acm-certificate",
       {
-        domainName: apiDomainName,
-        cloudflareZoneId,
-        awsProvider: defaultProvider,
+        domainName: domainName,
+        cloudflareZoneId: props.cloudflareZoneId,
+        awsProvider: props.awsProvider,
       }
     );
 
-    const apiLambda = new aws.JsLambdaFunction(this, "api-lambda", {
+    const lambda = new aws.JsLambdaFunction(this, "api-lambda", {
       codePath: path.resolve(__dirname, "../dist/api"),
     });
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
-      lambdaFunction: apiLambda.lambdaFunction,
+      lambdaFunction: lambda.lambdaFunction,
     });
     const customDomain = lambdaHttpApi.withCustomDomain({
-      domainName: apiDomainName,
-      acmCertificateValidation: apiCertificate.acmCertificateValidation,
+      domainName: domainName,
+      acmCertificateValidation: certificate.acmCertificateValidation,
     });
     new cloudflare.CNameDnsRecord(this, "api-cname-record", {
-      zoneId: cloudflareZoneId,
-      domainName: apiDomainName,
+      zoneId: props.cloudflareZoneId,
+      domainName: domainName,
       target: customDomain.domainName.domainNameConfiguration.targetDomainName,
-    });
-
-    const nextDomainName = "next.dev.everything.tsukiyo.io";
-    const nextCertificate = new aws.AcmCertificateForCloudflare(
-      this,
-      "next-acm-certificate",
-      {
-        domainName: nextDomainName,
-        cloudflareZoneId,
-        awsProvider: usEast1AwsProvider,
-      }
-    );
-    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
-    nextStaticSite.withCustomDomain({
-      domainName: nextDomainName,
-      acmCertificateValidation: nextCertificate.acmCertificateValidation,
-    });
-    new cloudflare.CNameDnsRecord(this, "next-cname-record", {
-      zoneId: cloudflareZoneId,
-      domainName: nextDomainName,
-      target: nextStaticSite.distribution.domainName,
     });
 
     new aws.SecretStringParameter(this, "api-lambda-http-api-endpoint", {
       name: "/test/api-lambda-http-api-endpoint",
       value: lambdaHttpApi.api.apiEndpoint,
     });
+  };
+
+  buildNextStaticSite = (props: {
+    cloudflareZoneId: string;
+    awsProvider: AwsProvider;
+  }) => {
+    const domainName = "next.dev.everything.tsukiyo.io";
+    const certificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "next-acm-certificate",
+      {
+        domainName: domainName,
+        cloudflareZoneId: props.cloudflareZoneId,
+        awsProvider: props.awsProvider,
+      }
+    );
+    const nextStaticSite = new aws.NextStaticSite(this, "next-static-site", {});
+    nextStaticSite.withCustomDomain({
+      domainName: domainName,
+      acmCertificateValidation: certificate.acmCertificateValidation,
+    });
+    new cloudflare.CNameDnsRecord(this, "next-cname-record", {
+      zoneId: props.cloudflareZoneId,
+      domainName: domainName,
+      target: nextStaticSite.distribution.domainName,
+    });
 
     new aws.SecretStringParameter(this, "next-static-site-bucket", {
       name: "/test/next-static-site-bucket",
       value: nextStaticSite.bucket.bucket,
     });
-  }
+  };
 }
