@@ -40,11 +40,13 @@ export class OAuthCognitoUserPool extends Construct {
   withCustomDomain = (props: {
     domainName: string;
     acmCertificateValidation: AcmCertificateValidation;
-  }) => {
-    new CognitoUserPoolDomain(this, "user-pool-domain", {
+  }): CognitoUserPoolDomain => {
+    const domainName = new CognitoUserPoolDomain(this, "user-pool-domain", {
       userPoolId: this.userPool.id,
       domain: props.domainName,
       certificateArn: props.acmCertificateValidation.certificateArn,
     });
+
+    return domainName;
   };
 }

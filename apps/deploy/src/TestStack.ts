@@ -174,9 +174,15 @@ export class TestStack extends TerraformStack {
       ],
     });
 
-    oauthPool.withCustomDomain({
+    const userPoolDomain = oauthPool.withCustomDomain({
       domainName,
       acmCertificateValidation: certificate.acmCertificateValidation,
+    });
+
+    new cloudflare.CNameDnsRecord(this, "next-cname-record", {
+      zoneId: props.cloudflareZoneId,
+      domainName: domainName,
+      target: userPoolDomain.cloudfrontDistribution,
     });
   };
 }
