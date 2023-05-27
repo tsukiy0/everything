@@ -179,7 +179,7 @@ export class TestStack extends TerraformStack {
       acmCertificateValidation: certificate.acmCertificateValidation,
     });
 
-    new cloudflare.CNameDnsRecord(this, "next-cname-record", {
+    new cloudflare.CNameDnsRecord(this, "auth-cname-record", {
       zoneId: props.cloudflareZoneId,
       domainName: domainName,
       target: userPoolDomain.cloudfrontDistribution,
