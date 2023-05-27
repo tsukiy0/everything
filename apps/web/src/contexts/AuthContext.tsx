@@ -1,6 +1,7 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 "use client";
 
+import { CognitoHostedUIIdentityProvider } from "@aws-amplify/auth";
 import { Amplify, Auth, Hub } from "aws-amplify";
 import React, {
   createContext,
@@ -36,8 +37,8 @@ Amplify.configure({
     oauth: {
       domain: process.env.NEXT_PUBLIC_USER_POOL_DOMAIN,
       scope: ["openid"],
-      redirectSignIn: process.env.NEXT_PUBLIC_USER_POOL_CALLBACK_URL,
-      redirectSignOut: process.env.NEXT_PUBLIC_USER_POOL_CALLBACK_URL,
+      redirectSignIn: process.env.NEXT_PUBLIC_USER_POOL_SIGN_IN_CALLBACK_URL,
+      redirectSignOut: process.env.NEXT_PUBLIC_USER_POOL_SIGN_OUT_CALLBACK_URL,
       responseType: "code",
     },
   },
@@ -48,25 +49,23 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const [status, setStatus] = useState<
     "NOT_SIGNED_IN" | "SIGNING_IN" | "SIGNED_IN"
-  >("NOT_SIGNED_IN");
+  >("SIGNING_IN");
   const [token, setToken] = useState<string>(undefined);
 
-  const getToken = useCallback(async () => {
+  const getToken = useCallback(async (): Promise<void> => {
     try {
       const session = await Auth.currentSession();
-      const token = session.getAccessToken();
-      return token.getJwtToken();
+      const token = session.getAccessToken().getJwtToken();
+      setStatus("SIGNED_IN");
+      setToken(token);
     } catch {
-      return undefined;
+      setStatus("NOT_SIGNED_IN");
+      setToken(undefined);
     }
   }, []);
 
   useEffect(() => {
-    (async () => {
-      const token = await getToken();
-      setStatus("SIGNED_IN");
-      setToken(token);
-    })();
+    getToken();
   }, [getToken]);
 
   useEffect(() => {
@@ -75,9 +74,15 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
         case "signIn":
           console.info("user signed in");
           console.log(data.payload);
-          const token = await getToken();
-          setStatus("SIGNED_IN");
-          setToken(token);
+          await getToken();
+          break;
+        case "signIn_failure":
+          console.error("user sign in failed");
+          break;
+        case "signOut":
+          console.info("user signed out");
+          setStatus("NOT_SIGNED_IN");
+          setToken(undefined);
           break;
         default:
           console.log(data.payload);
@@ -95,7 +100,11 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
         <AuthContext.Provider
           value={{
             status,
-            signIn: () => Auth.federatedSignIn(),
+            signIn: () =>
+              Auth.federatedSignIn({
+                provider: CognitoHostedUIIdentityProvider.Cognito,
+                customState: "hello",
+              }),
           }}
         >
           {children}
