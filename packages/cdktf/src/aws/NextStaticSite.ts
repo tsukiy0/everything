@@ -4,6 +4,7 @@ import { DataAwsIamPolicyDocument } from "@cdktf/provider-aws/lib/data-aws-iam-p
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
 import { S3BucketPolicy } from "@cdktf/provider-aws/lib/s3-bucket-policy";
 import { S3BucketPublicAccessBlock } from "@cdktf/provider-aws/lib/s3-bucket-public-access-block";
+import { S3BucketWebsiteConfiguration } from "@cdktf/provider-aws/lib/s3-bucket-website-configuration";
 import { Construct } from "constructs";
 
 export class NextStaticSite extends Construct {
@@ -17,6 +18,20 @@ export class NextStaticSite extends Construct {
       bucketPrefix: `static-site-${id}`,
       forceDestroy: true,
     });
+
+    const bucketWebsiteConfiguration = new S3BucketWebsiteConfiguration(
+      this,
+      "bucket-website-configuration",
+      {
+        bucket: bucket.id,
+        indexDocument: {
+          suffix: "index.html",
+        },
+        errorDocument: {
+          key: "index.html",
+        },
+      }
+    );
 
     new S3BucketPublicAccessBlock(this, "bucket-public-access-block", {
       bucket: bucket.id,
@@ -60,7 +75,7 @@ export class NextStaticSite extends Construct {
         origin: [
           {
             originId: "s3",
-            domainName: bucket.bucketRegionalDomainName,
+            domainName: bucketWebsiteConfiguration.websiteDomain,
           },
         ],
         // aliases: props.domainName ? [props.domainName] : [],
