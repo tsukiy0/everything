@@ -75,7 +75,7 @@ export class NextStaticSite extends Construct {
         origin: [
           {
             originId: "s3",
-            domainName: bucket.bucketRegionalDomainName,
+            domainName: bucketWebsiteConfiguration.websiteDomain,
           },
         ],
         enabled: true,
