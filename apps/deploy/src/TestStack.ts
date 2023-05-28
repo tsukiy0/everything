@@ -173,15 +173,10 @@ export class TestStack extends TerraformStack {
       }
     );
 
+    const callbackUrl = "https://next.dev.everything.tsukiyo.io/auth";
     const oauthPool = new aws.OAuthCognitoUserPool(this, "oauth-pool", {
-      signInCallbackUrls: [
-        "https://next.dev.everything.tsukiyo.io/auth",
-        "http://localhost:3000/auth",
-      ],
-      signOutCallbackUrls: [
-        "https://next.dev.everything.tsukiyo.io/auth",
-        "http://localhost:3000/auth",
-      ],
+      signInCallbackUrls: [callbackUrl, "http://localhost:3000/auth"],
+      signOutCallbackUrls: [callbackUrl, "http://localhost:3000/auth"],
     });
 
     const userPoolDomain = oauthPool.withCustomDomain({
@@ -193,6 +188,31 @@ export class TestStack extends TerraformStack {
       zoneId: props.cloudflareZoneId,
       domainName: domainName,
       target: userPoolDomain.cloudfrontDistribution,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-region", {
+      name: "/test/auth-user-pool-region",
+      value: "us-west-2",
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-id", {
+      name: "/test/auth-user-pool-id",
+      value: oauthPool.userPool.id,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-client-id", {
+      name: "/test/auth-user-pool-client-id",
+      value: oauthPool.userPoolClient.id,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-domain", {
+      name: "/test/auth-user-pool-client-domain",
+      value: domainName,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-callback-url", {
+      name: "/test/auth-user-pool-callback-url",
+      value: callbackUrl,
     });
 
     return oauthPool;
