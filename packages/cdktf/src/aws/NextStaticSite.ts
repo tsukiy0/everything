@@ -76,6 +76,12 @@ export class NextStaticSite extends Construct {
           {
             originId: "s3",
             domainName: bucketWebsiteConfiguration.websiteEndpoint,
+            customOriginConfig: {
+              httpPort: 80,
+              httpsPort: 443,
+              originSslProtocols: ["TLSv1.2"],
+              originProtocolPolicy: "http-only",
+            },
           },
         ],
         enabled: true,
