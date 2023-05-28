@@ -20,5 +20,5 @@ NEXT_PUBLIC_USER_POOL_SIGN_OUT_CALLBACK_URL=$(get_ssm_parameter /test/auth-user-
 yarn export
 
 NEXT_STATIC_SITE_BUCKET=$(get_ssm_parameter /test/next-static-site-bucket)
-aws s3 sync out s3://${NEXT_STATIC_SITE_BUCKET}
+aws s3 sync out s3://${NEXT_STATIC_SITE_BUCKET} --delete
 popd
