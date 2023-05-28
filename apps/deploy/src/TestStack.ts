@@ -206,7 +206,7 @@ export class TestStack extends TerraformStack {
     });
 
     new aws.SecretStringParameter(this, "auth-user-pool-domain", {
-      name: "/test/auth-user-pool-client-domain",
+      name: "/test/auth-user-pool-domain",
       value: domainName,
     });
 
