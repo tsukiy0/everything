@@ -173,10 +173,10 @@ export class TestStack extends TerraformStack {
       }
     );
 
-    const callbackUrl = "https://next.dev.everything.tsukiyo.io/auth";
+    const callbackUrl = "https://next.dev.everything.tsukiyo.io/auth/";
     const oauthPool = new aws.OAuthCognitoUserPool(this, "oauth-pool", {
-      signInCallbackUrls: [callbackUrl, "http://localhost:3000/auth"],
-      signOutCallbackUrls: [callbackUrl, "http://localhost:3000/auth"],
+      signInCallbackUrls: [callbackUrl, "http://localhost:3000/auth/"],
+      signOutCallbackUrls: [callbackUrl, "http://localhost:3000/auth/"],
     });
 
     const userPoolDomain = oauthPool.withCustomDomain({
