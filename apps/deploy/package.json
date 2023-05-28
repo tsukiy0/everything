@@ -12,6 +12,7 @@
   "dependencies": {
     "@cdktf/provider-aws": "14.0.4",
     "@tsukiy0/cdktf": "*",
+    "aws-jwt-verify": "^4.0.0",
     "cdktf": "0.16.1",
     "constructs": "10.2.29",
     "express": "4.18.2"

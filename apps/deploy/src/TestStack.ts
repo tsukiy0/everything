@@ -68,25 +68,27 @@ export class TestStack extends TerraformStack {
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
 
-    this.buildLambdaHttpApi({
-      cloudflareZoneId,
-      awsProvider: defaultAwsProvider,
-    });
-
     this.buildNextStaticSite({
       cloudflareZoneId,
       awsProvider: usEast1AwsProvider,
     });
 
-    this.buildOAuth({
+    const oauthCognitoUserPool = this.buildOAuth({
       cloudflareZoneId,
       awsProvider: usEast1AwsProvider,
+    });
+
+    this.buildLambdaHttpApi({
+      cloudflareZoneId,
+      awsProvider: defaultAwsProvider,
+      oauthCognitoUserPool: oauthCognitoUserPool,
     });
   }
 
   buildLambdaHttpApi = (props: {
     cloudflareZoneId: string;
     awsProvider: AwsProvider;
+    oauthCognitoUserPool: aws.OAuthCognitoUserPool;
   }) => {
     const domainName = "api.dev.everything.tsukiyo.io";
     const certificate = new aws.AcmCertificateForCloudflare(
@@ -101,6 +103,10 @@ export class TestStack extends TerraformStack {
 
     const lambda = new aws.JsLambdaFunction(this, "api-lambda", {
       codePath: path.resolve(__dirname, "../dist/api"),
+      environment: {
+        USER_POOL_ID: props.oauthCognitoUserPool.userPool.id,
+        USER_POOL_CLIENT_ID: props.oauthCognitoUserPool.userPoolClient.id,
+      },
     });
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
       lambdaFunction: lambda.lambdaFunction,
@@ -155,7 +161,7 @@ export class TestStack extends TerraformStack {
   buildOAuth = (props: {
     cloudflareZoneId: string;
     awsProvider: AwsProvider;
-  }) => {
+  }): aws.OAuthCognitoUserPool => {
     const domainName = "auth.next.dev.everything.tsukiyo.io";
     const certificate = new aws.AcmCertificateForCloudflare(
       this,
@@ -188,5 +194,7 @@ export class TestStack extends TerraformStack {
       domainName: domainName,
       target: userPoolDomain.cloudfrontDistribution,
     });
+
+    return oauthPool;
   };
 }

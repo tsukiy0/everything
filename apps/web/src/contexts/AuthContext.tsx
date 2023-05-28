@@ -14,11 +14,11 @@ import React, {
 
 type AuthContextValue =
   | {
-      status: "NOT_SIGNED_IN";
+      status: "SIGNED_OUT";
       signIn: () => void;
     }
   | {
-      status: "SIGNING_IN";
+      status: "LOADING";
     }
   | {
       status: "SIGNED_IN";
@@ -47,9 +47,9 @@ Amplify.configure({
 export const AuthContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
-  const [status, setStatus] = useState<
-    "NOT_SIGNED_IN" | "SIGNING_IN" | "SIGNED_IN"
-  >("SIGNING_IN");
+  const [status, setStatus] = useState<"SIGNED_OUT" | "LOADING" | "SIGNED_IN">(
+    "LOADING"
+  );
   const [token, setToken] = useState<string>(undefined);
 
   const getToken = useCallback(async (): Promise<void> => {
@@ -59,7 +59,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
       setStatus("SIGNED_IN");
       setToken(token);
     } catch {
-      setStatus("NOT_SIGNED_IN");
+      setStatus("SIGNED_OUT");
       setToken(undefined);
     }
   }, []);
@@ -81,7 +81,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
           break;
         case "signOut":
           console.info("user signed out");
-          setStatus("NOT_SIGNED_IN");
+          setStatus("SIGNED_OUT");
           setToken(undefined);
           break;
         default:
@@ -95,7 +95,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
   }, [getToken]);
 
   switch (status) {
-    case "NOT_SIGNED_IN":
+    case "SIGNED_OUT":
       return (
         <AuthContext.Provider
           value={{
@@ -110,7 +110,7 @@ export const AuthContextProvider: React.FC<PropsWithChildren> = ({
           {children}
         </AuthContext.Provider>
       );
-    case "SIGNING_IN":
+    case "LOADING":
       return (
         <AuthContext.Provider
           value={{
