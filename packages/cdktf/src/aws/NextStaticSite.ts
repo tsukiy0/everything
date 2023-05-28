@@ -78,7 +78,6 @@ export class NextStaticSite extends Construct {
             domainName: bucketWebsiteConfiguration.websiteDomain,
           },
         ],
-        // aliases: props.domainName ? [props.domainName] : [],
         enabled: true,
         defaultRootObject: "index.html",
         defaultCacheBehavior: {
