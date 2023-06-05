@@ -14,7 +14,11 @@ export const Private: React.FC = () => {
 
     const url = "https://api.dev.everything.tsukiyo.io/v1/private";
 
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `${auth.token}`,
+      },
+    });
     if (!res.ok) {
       throw new Error("Network response was not ok");
     }

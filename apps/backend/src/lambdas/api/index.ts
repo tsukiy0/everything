@@ -47,7 +47,8 @@ export const handler: APIGatewayProxyHandlerV2 = new ExpressHandlerBuilder()
           const payload = JwtVerifier.verifySync(req.headers.authorization!);
           logger.info("jwt verified", { payload });
           next();
-        } catch {
+        } catch (e) {
+          logger.error(e);
           res.status(403).end();
         }
       },
