@@ -38,19 +38,23 @@ export const handler: APIGatewayProxyHandlerV2 = new ExpressHandlerBuilder()
     app.get(
       "/v1/private",
       (req, res, next) => {
-        if (!req.headers.authorization) {
-          res.status(403).end();
-          return;
-        }
+        (async () => {
+          if (!req.headers.authorization) {
+            res.status(403).end();
+            return;
+          }
 
-        try {
-          const payload = JwtVerifier.verifySync(req.headers.authorization!);
-          logger.info("jwt verified", { payload });
-          next();
-        } catch (e) {
-          logger.error(e);
-          res.status(403).end();
-        }
+          try {
+            const payload = await JwtVerifier.verify(
+              req.headers.authorization!
+            );
+            logger.info("jwt verified", { payload });
+            next();
+          } catch (e) {
+            logger.error(e);
+            res.status(403).end();
+          }
+        })().catch(next);
       },
       (_, res) => {
         res.status(200).send("private :)");
