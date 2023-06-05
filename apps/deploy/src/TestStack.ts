@@ -38,14 +38,14 @@ export class TestStack extends TerraformStack {
     ).value();
 
     const loggingLambda = new aws.JsLambdaFunction(this, "logging-lambda", {
-      codePath: path.resolve(__dirname, "../dist/logging"),
+      codePath: path.resolve(__dirname, "../../backend/dist/logging"),
     });
 
     const queueConsumerLambda = new aws.JsLambdaFunction(
       this,
       "queue-consumer-lambda",
       {
-        codePath: path.resolve(__dirname, "../dist/queueConsumer"),
+        codePath: path.resolve(__dirname, "../../backend/dist/queueConsumer"),
       }
     );
     const lambdaQueue = new aws.LambdaSqsQueue(this, "lambda-queue", {
@@ -60,7 +60,7 @@ export class TestStack extends TerraformStack {
       this,
       "queue-producer-lambda",
       {
-        codePath: path.resolve(__dirname, "../dist/queueProducer"),
+        codePath: path.resolve(__dirname, "../../backend/dist/queueProducer"),
         environment: {
           QUEUE_URL: lambdaQueue.sqsQueue.url,
         },
@@ -102,7 +102,7 @@ export class TestStack extends TerraformStack {
     );
 
     const lambda = new aws.JsLambdaFunction(this, "api-lambda", {
-      codePath: path.resolve(__dirname, "../dist/api"),
+      codePath: path.resolve(__dirname, "../../backend/dist/api"),
       environment: {
         USER_POOL_ID: props.oauthCognitoUserPool.userPool.id,
         USER_POOL_CLIENT_ID: props.oauthCognitoUserPool.userPoolClient.id,

@@ -1,21 +1,23 @@
 {
-  "name": "deploy",
+  "name": "backend",
   "private": true,
   "version": "0.0.0",
   "scripts": {
     "prelint": "tsc --noEmit",
     "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0",
-    "deploy": "cdktf deploy --auto-approve '*'"
+    "prebuild": "rm -rf dist",
+    "build": "esbuild src/lambdas/**/index.ts --bundle --platform=node --sourcemap --outdir=dist"
   },
   "dependencies": {
-    "@cdktf/provider-aws": "14.0.4",
-    "@tsukiy0/cdktf": "*",
-    "cdktf": "0.16.1",
-    "constructs": "10.2.29"
+    "@tsukiy0/core": "*",
+    "@tsukiy0/core-aws": "*",
+    "aws-jwt-verify": "^4.0.0",
+    "express": "4.18.2"
   },
   "devDependencies": {
     "@tsukiy0/eslint-config-custom": "*",
-    "cdktf-cli": "0.16.1",
+    "@types/aws-lambda": "8.10.115",
+    "@types/express": "4.17.17",
     "esbuild": "0.17.19",
     "ts-node": "10.9.1",
     "tsconfig": "*",
