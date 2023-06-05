@@ -1,12 +1,12 @@
 import { PropsWithChildren } from "react";
 
-import { AuthContextProvider } from "../contexts/AuthContext";
+import { ClientContextProvider } from "../contexts/ClientContext";
 
 const RootLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <html lang="en">
       <body>
-        <AuthContextProvider>{children}</AuthContextProvider>
+        <ClientContextProvider>{children}</ClientContextProvider>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --scope=web",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:integration": "turbo run test:integration",

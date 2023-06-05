@@ -2,6 +2,7 @@ import { ConsoleLogger } from "@tsukiy0/core";
 import { ExpressHandlerBuilder } from "@tsukiy0/core-aws";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import cors from "cors";
 import express from "express";
 import { z } from "zod";
 
@@ -23,6 +24,13 @@ const logger = new ConsoleLogger();
 export const handler: APIGatewayProxyHandlerV2 = new ExpressHandlerBuilder()
   .withApp(async () => {
     const app = express();
+
+    app.use(
+      cors({
+        origin: "*",
+      })
+    );
+
     app.get("/v1/healthcheck", (_, res) => {
       res.status(200).send("OK");
     });
