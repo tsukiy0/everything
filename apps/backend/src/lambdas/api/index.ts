@@ -1,6 +1,8 @@
 import { ConsoleLogger } from "@tsukiy0/core";
-import { ExpressHandlerBuilder } from "@tsukiy0/core-aws";
-import { CognitoJwtVerifier } from "aws-jwt-verify";
+import {
+  CognitoJwtAuthMiddleware,
+  ExpressHandlerBuilder,
+} from "@tsukiy0/core-aws";
 import { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import cors from "cors";
 import express from "express";
@@ -13,17 +15,15 @@ const Env = z.object({
 
 const env = Env.parse(process.env);
 
-const JwtVerifier = CognitoJwtVerifier.create({
-  userPoolId: env.USER_POOL_ID,
-  tokenUse: "access",
-  clientId: env.USER_POOL_CLIENT_ID,
-});
-
 const logger = new ConsoleLogger();
 
 export const handler: APIGatewayProxyHandlerV2 = new ExpressHandlerBuilder()
   .withApp(async () => {
     const app = express();
+    const cognitoJwtAuthMiddleware = CognitoJwtAuthMiddleware({
+      userPoolId: env.USER_POOL_ID,
+      userPoolClientId: env.USER_POOL_CLIENT_ID,
+    });
 
     app.use(
       cors({
@@ -35,31 +35,9 @@ export const handler: APIGatewayProxyHandlerV2 = new ExpressHandlerBuilder()
       res.status(200).send("OK");
     });
 
-    app.get(
-      "/v1/private",
-      (req, res, next) => {
-        (async () => {
-          if (!req.headers.authorization) {
-            res.status(403).end();
-            return;
-          }
-
-          try {
-            const payload = await JwtVerifier.verify(
-              req.headers.authorization!
-            );
-            logger.info("jwt verified", { payload });
-            next();
-          } catch (e) {
-            logger.error(e);
-            res.status(403).end();
-          }
-        })().catch(next);
-      },
-      (_, res) => {
-        res.status(200).send("private :)");
-      }
-    );
+    app.get("/v1/private", cognitoJwtAuthMiddleware, (_, res) => {
+      res.status(200).json(res.locals.cognitoJwtPayload);
+    });
 
     return app;
   })
