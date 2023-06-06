@@ -16,6 +16,7 @@
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
+        "aws-amplify": "5.2.4"
     },
     "devDependencies": {
         "@tsukiy0/eslint-config-custom": "*",
@@ -25,7 +26,6 @@
         "typescript": "5.0.4"
     },
     "peerDependencies": {
-        "aws-amplify": "^5",
         "react": "^18"
     }
 }

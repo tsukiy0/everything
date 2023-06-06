@@ -25,9 +25,18 @@ type Value =
 
 const Context = createContext<Value>({} as any);
 
-export const OAuthCognitoContextProvider: React.FC<PropsWithChildren> = ({
-  children,
-}) => {
+export const OAuthCognitoContextProvider: React.FC<
+  PropsWithChildren & {
+    config: {
+      region: string;
+      userPoolId: string;
+      userPoolClientId: string;
+      domain: string;
+      signInCallbackUrl: string;
+      signOutCallbackUrl: string;
+    };
+  }
+> = ({ children, config }) => {
   const [state, setState] = useState<
     | {
         status: "SIGNED_IN";
@@ -57,8 +66,22 @@ export const OAuthCognitoContextProvider: React.FC<PropsWithChildren> = ({
   }, []);
 
   useEffect(() => {
+    Auth.configure({
+      region: config.region,
+      userPoolId: config.userPoolId,
+      userPoolWebClientId: config.userPoolClientId,
+      mandatorySignIn: true,
+      oauth: {
+        domain: config.domain,
+        scope: ["openid"],
+        redirectSignIn: config.signInCallbackUrl,
+        redirectSignOut: config.signOutCallbackUrl,
+        responseType: "code",
+      },
+    });
+
     getToken();
-  }, [getToken]);
+  }, [config, getToken]);
 
   useEffect(() => {
     const listener: Parameters<typeof Hub.listen>[1] = async (data) => {
