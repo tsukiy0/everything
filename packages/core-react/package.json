@@ -11,19 +11,21 @@
     "repository": "https://github.com/tsukiy0/everything",
     "scripts": {
         "prebuild": "rm -rf dist",
-        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "build": "tsup-node src/index.ts --format cjs,esm --dts --treeshake",
         "prelint": "tsc --noEmit",
         "lint": "eslint src --ext ts --report-unused-disable-directives --max-warnings 0"
     },
     "dependencies": {
-        "aws-amplify": "^5.2.4",
-        "react": "^18.2.0"
     },
     "devDependencies": {
         "@tsukiy0/eslint-config-custom": "*",
-        "@types/react": "^18.2.8",
+        "@types/react": "18.2.8",
         "tsconfig": "*",
         "tsup": "6.7.0",
         "typescript": "5.0.4"
+    },
+    "peerDependencies": {
+        "aws-amplify": "^5",
+        "react": "^18"
     }
 }

@@ -1,12 +1,12 @@
 "use client";
 
+import { aws } from "@tsukiy0/core-react";
 import React, { PropsWithChildren } from "react";
 
-import { useAuthContext } from "../contexts/AuthContext";
 import { Private } from "./Private";
 
 export const AuthContainer: React.FC<PropsWithChildren> = ({ children }) => {
-  const auth = useAuthContext();
+  const auth = aws.useOAuthCognitoContext();
   switch (auth.status) {
     case "SIGNED_OUT":
       return (

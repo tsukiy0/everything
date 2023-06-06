@@ -1,12 +1,11 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { aws } from "@tsukiy0/core-react";
 import React, { useCallback } from "react";
 
-import { useAuthContext } from "../contexts/AuthContext";
-
 export const Private: React.FC = () => {
-  const auth = useAuthContext();
+  const auth = aws.useOAuthCognitoContext();
   const getPrivate = useCallback(async () => {
     if (auth.status !== "SIGNED_IN") {
       return;
