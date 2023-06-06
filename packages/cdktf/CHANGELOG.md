@@ -1,5 +1,11 @@
 # @tsukiy0/cdktf
 
+## 0.7.0
+
+### Minor Changes
+
+- 735a16d: add cognito auth
+
 ## 0.6.0
 
 ### Minor Changes
