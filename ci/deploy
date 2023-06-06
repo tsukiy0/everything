@@ -2,9 +2,23 @@
 
 set -euo pipefail
 
+function get_ssm_parameter() {
+  aws ssm get-parameter --name $1 --with-decryption --query Parameter.Value --output text
+}
+
 pushd apps/deploy
 yarn deploy
 popd
 
-NEXT_STATIC_SITE_BUCKET=$(aws ssm get-parameter --name /test/next-static-site-bucket --with-decryption --query Parameter.Value --output text)
-aws s3 sync apps/web/out s3://${NEXT_STATIC_SITE_BUCKET}
+pushd apps/web
+export NEXT_PUBLIC_USER_POOL_REGION=$(get_ssm_parameter /test/auth-user-pool-region)
+export NEXT_PUBLIC_USER_POOL_ID=$(get_ssm_parameter /test/auth-user-pool-id)
+export NEXT_PUBLIC_USER_POOL_CLIENT_ID=$(get_ssm_parameter /test/auth-user-pool-client-id)
+export NEXT_PUBLIC_USER_POOL_DOMAIN=$(get_ssm_parameter /test/auth-user-pool-domain)
+export NEXT_PUBLIC_USER_POOL_SIGN_IN_CALLBACK_URL=$(get_ssm_parameter /test/auth-user-pool-callback-url)
+export NEXT_PUBLIC_USER_POOL_SIGN_OUT_CALLBACK_URL=$(get_ssm_parameter /test/auth-user-pool-callback-url)
+yarn export
+
+NEXT_STATIC_SITE_BUCKET=$(get_ssm_parameter /test/next-static-site-bucket)
+aws s3 sync out s3://${NEXT_STATIC_SITE_BUCKET} --delete
+popd

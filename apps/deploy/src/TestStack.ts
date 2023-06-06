@@ -38,14 +38,14 @@ export class TestStack extends TerraformStack {
     ).value();
 
     const loggingLambda = new aws.JsLambdaFunction(this, "logging-lambda", {
-      codePath: path.resolve(__dirname, "../dist/logging"),
+      codePath: path.resolve(__dirname, "../../backend/dist/logging"),
     });
 
     const queueConsumerLambda = new aws.JsLambdaFunction(
       this,
       "queue-consumer-lambda",
       {
-        codePath: path.resolve(__dirname, "../dist/queueConsumer"),
+        codePath: path.resolve(__dirname, "../../backend/dist/queueConsumer"),
       }
     );
     const lambdaQueue = new aws.LambdaSqsQueue(this, "lambda-queue", {
@@ -60,7 +60,7 @@ export class TestStack extends TerraformStack {
       this,
       "queue-producer-lambda",
       {
-        codePath: path.resolve(__dirname, "../dist/queueProducer"),
+        codePath: path.resolve(__dirname, "../../backend/dist/queueProducer"),
         environment: {
           QUEUE_URL: lambdaQueue.sqsQueue.url,
         },
@@ -68,20 +68,27 @@ export class TestStack extends TerraformStack {
     );
     lambdaQueue.grantSend(queueProducerLambda.role);
 
-    this.buildLambdaHttpApi({
-      cloudflareZoneId,
-      awsProvider: defaultAwsProvider,
-    });
-
     this.buildNextStaticSite({
       cloudflareZoneId,
       awsProvider: usEast1AwsProvider,
+    });
+
+    const oauthCognitoUserPool = this.buildOAuth({
+      cloudflareZoneId,
+      awsProvider: usEast1AwsProvider,
+    });
+
+    this.buildLambdaHttpApi({
+      cloudflareZoneId,
+      awsProvider: defaultAwsProvider,
+      oauthCognitoUserPool: oauthCognitoUserPool,
     });
   }
 
   buildLambdaHttpApi = (props: {
     cloudflareZoneId: string;
     awsProvider: AwsProvider;
+    oauthCognitoUserPool: aws.OAuthCognitoUserPool;
   }) => {
     const domainName = "api.dev.everything.tsukiyo.io";
     const certificate = new aws.AcmCertificateForCloudflare(
@@ -95,7 +102,11 @@ export class TestStack extends TerraformStack {
     );
 
     const lambda = new aws.JsLambdaFunction(this, "api-lambda", {
-      codePath: path.resolve(__dirname, "../dist/api"),
+      codePath: path.resolve(__dirname, "../../backend/dist/api"),
+      environment: {
+        USER_POOL_ID: props.oauthCognitoUserPool.userPool.id,
+        USER_POOL_CLIENT_ID: props.oauthCognitoUserPool.userPoolClient.id,
+      },
     });
     const lambdaHttpApi = new aws.LambdaHttpApi(this, "api-lambda-http-api", {
       lambdaFunction: lambda.lambdaFunction,
@@ -145,5 +156,65 @@ export class TestStack extends TerraformStack {
       name: "/test/next-static-site-bucket",
       value: nextStaticSite.bucket.bucket,
     });
+  };
+
+  buildOAuth = (props: {
+    cloudflareZoneId: string;
+    awsProvider: AwsProvider;
+  }): aws.OAuthCognitoUserPool => {
+    const domainName = "auth.next.dev.everything.tsukiyo.io";
+    const certificate = new aws.AcmCertificateForCloudflare(
+      this,
+      "auth-acm-certificate",
+      {
+        domainName: domainName,
+        cloudflareZoneId: props.cloudflareZoneId,
+        awsProvider: props.awsProvider,
+      }
+    );
+
+    const callbackUrl = "https://next.dev.everything.tsukiyo.io/auth/";
+    const oauthPool = new aws.OAuthCognitoUserPool(this, "oauth-pool", {
+      signInCallbackUrls: [callbackUrl, "http://localhost:3000/auth/"],
+      signOutCallbackUrls: [callbackUrl, "http://localhost:3000/auth/"],
+    });
+
+    const userPoolDomain = oauthPool.withCustomDomain({
+      domainName,
+      acmCertificateValidation: certificate.acmCertificateValidation,
+    });
+
+    new cloudflare.CNameDnsRecord(this, "auth-cname-record", {
+      zoneId: props.cloudflareZoneId,
+      domainName: domainName,
+      target: userPoolDomain.cloudfrontDistribution,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-region", {
+      name: "/test/auth-user-pool-region",
+      value: "us-west-2",
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-id", {
+      name: "/test/auth-user-pool-id",
+      value: oauthPool.userPool.id,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-client-id", {
+      name: "/test/auth-user-pool-client-id",
+      value: oauthPool.userPoolClient.id,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-domain", {
+      name: "/test/auth-user-pool-domain",
+      value: domainName,
+    });
+
+    new aws.SecretStringParameter(this, "auth-user-pool-callback-url", {
+      name: "/test/auth-user-pool-callback-url",
+      value: callbackUrl,
+    });
+
+    return oauthPool;
   };
 }
