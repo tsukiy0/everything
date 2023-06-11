@@ -10,15 +10,15 @@
   "dependencies": {
     "@cdktf/provider-aws": "14.0.4",
     "@tsukiy0/cdktf": "*",
-    "cdktf": "0.16.1",
-    "constructs": "10.2.29"
+    "cdktf": "0.16.3",
+    "constructs": "10.2.49"
   },
   "devDependencies": {
     "@tsukiy0/eslint-config-custom": "*",
-    "cdktf-cli": "0.16.1",
-    "esbuild": "0.17.19",
+    "cdktf-cli": "0.16.3",
+    "esbuild": "0.18.0",
     "ts-node": "10.9.1",
     "tsconfig": "*",
-    "typescript": "5.0.4"
+    "typescript": "5.1.3"
   }
 }

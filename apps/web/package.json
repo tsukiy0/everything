@@ -8,18 +8,18 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tsukiy0/core-react": "*",
     "@tanstack/react-query": "4.29.12",
-    "next": "13.4.1",
+    "@tsukiy0/core-react": "*",
+    "next": "13.4.5",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@tsukiy0/eslint-config-custom": "*",
-    "@types/node": "20.2.1",
-    "@types/react": "18.2.8",
-    "@types/react-dom": "18.0.7",
+    "@types/node": "20.3.0",
+    "@types/react": "18.2.11",
+    "@types/react-dom": "18.2.4",
     "tsconfig": "*",
-    "typescript": "5.0.4"
+    "typescript": "5.1.3"
   }
 }
