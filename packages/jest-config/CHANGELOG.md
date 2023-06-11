@@ -1,5 +1,11 @@
 # @tsukiy0/jest-config
 
+## 0.3.0
+
+### Minor Changes
+
+- 09db5db: upgrade deps
+
 ## 0.2.0
 
 ### Minor Changes

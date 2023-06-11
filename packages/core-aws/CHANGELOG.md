@@ -1,5 +1,16 @@
 # @tsukiy0/core-aws
 
+## 0.8.0
+
+### Minor Changes
+
+- 09db5db: upgrade deps
+
+### Patch Changes
+
+- Updated dependencies [09db5db]
+  - @tsukiy0/core@0.4.0
+
 ## 0.7.0
 
 ### Minor Changes
