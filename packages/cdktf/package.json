@@ -18,16 +18,16 @@
     },
     "dependencies": {
         "@cdktf/provider-aws": "14.0.4",
-        "@cdktf/provider-cloudflare": "6.0.3",
-        "cdktf": "0.16.1",
-        "constructs": "10.2.29"
+        "@cdktf/provider-cloudflare": "6.0.6",
+        "cdktf": "0.16.3",
+        "constructs": "10.2.49"
     },
     "devDependencies": {
-        "@aws-sdk/client-ssm": "3.335.0",
+        "@aws-sdk/client-ssm": "3.350.0",
         "@tsukiy0/eslint-config-custom": "*",
-        "cdktf-cli": "0.16.1",
+        "cdktf-cli": "0.16.3",
         "tsconfig": "*",
         "tsup": "6.7.0",
-        "typescript": "5.0.4"
+        "typescript": "5.1.3"
     }
 }
