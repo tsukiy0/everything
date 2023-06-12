@@ -1,5 +1,11 @@
 # @tsukiy0/cdktf
 
+## 0.8.0
+
+### Minor Changes
+
+- 09db5db: upgrade deps
+
 ## 0.7.0
 
 ### Minor Changes

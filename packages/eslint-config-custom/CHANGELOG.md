@@ -1,5 +1,11 @@
 # @tsukiy0/eslint-config-custom
 
+## 0.4.0
+
+### Minor Changes
+
+- 09db5db: upgrade deps
+
 ## 0.3.0
 
 ### Minor Changes
